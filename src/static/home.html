@@ -1,11 +1,11 @@
 <head>
-  <title>Video Game Collector</title>
+  <title>PokeTCG Collector</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <h1>
     <a class="hiddenLink" href="/" title="Click to go Home"
-      >VGC v<%= version %></a
+      >PokeTCG v<%= version %></a
     >
     -
     <a class="hiddenLink" href="/logout" title="Click to Logout"
@@ -23,7 +23,7 @@
         "height=600, width=500, left=200, top=200, menubar=no, resizeable=no, scrollbars=no, status=no"
       );'
     >
-      <h3>Add Game to Collection</h3>
+      <h3>Add Card to Collection</h3>
     </button>
     <button
       onclick='open(
@@ -32,9 +32,9 @@
         "height=600, width=500, left=200, top=200, menubar=no, resizeable=no, scrollbars=no, status=no"
       );'
     >
-      <h3>Add New Game Entry</h3>
+      <h3>Add New Card Entry</h3>
     </button>
-    <button onclick='window.location.pathname = "/stats"'>
+    <button onclick='window.location.pathname = "/stats"' disabled>
       <h3>Stats</h3>
     </button>
   </div>

@@ -4,18 +4,18 @@ const package = require("../../../package.json");
 module.exports = {
   init: (prefix, website) => {
     website.get(`${prefix}collection`, (request, response) => {
-      if (!request.session.vgc || !request.session.vgc.authenticated) {
+      if (!request.session.poketcg || !request.session.poketcg.authenticated) {
         response.redirect(`${prefix}?redirect=${encodeURIComponent(request.url.slice(1))}`);
       } else {
         func.connectToMySQL(response, (err, db) => {
           if (err) throw err;
-          db.query("SELECT * FROM Gaming.Entries", (err, results, fields) => {
+          db.query("SELECT * FROM PokemonTCG.Cards", (err, results, fields) => {
             if (err) {
               response.send(func.sendError(err));
               return;
             }
             db.query(
-              "SELECT * FROM Gaming.Adjustments",
+              "SELECT * FROM PokemonTCG.Adjustments",
               (err, adjustments, x) => {
                 if (err) {
                   response.send(func.sendError(err));
@@ -23,16 +23,17 @@ module.exports = {
                 }
                 let hiddenColumns = [
                   "ID",
-                  "TotalCost",
-                  "TotalValue",
-                  "HasDisc",
-                  "HasBox",
-                  "HasManuals",
-                  "HasOGLiner",
-                  "UPC",
-                  "PurchaseDate",
-                  "DateAdded",
-                  "LastUpdated",
+                  "HP",
+                  "DexNo",
+                  "Height",
+                  "Weight",
+                  "Attacks",
+                  "Weakness",
+                  "Resistance",
+                  "Description",
+                  "RetreatCost",
+                  "Rarity",
+                  "DateAdded"
                 ];
                 let header = [];
                 header.push("Actions", "Qty", "Includes");
@@ -66,7 +67,9 @@ module.exports = {
                   i.push(`%IMG%${iconCode}\\n`)
                   for (column in results[row]) {
                     if (hiddenColumns.includes(column)) continue;
-                    i.push(results[row][column]);
+                    let newColumn = results[row][column]
+                    if (!newColumn) newColumn = " "
+                    i.push(newColumn);
                   }
                   data.push(i);
                 }
@@ -74,7 +77,7 @@ module.exports = {
                   `${__dirname.slice(0, -13)}/static/collection.html`,
                   {
                     version: package.version,
-                    username: request.session.vgc.username,
+                    username: request.session.poketcg.username,
                     totalGames: results.length,
                     header: JSON.stringify(header),
                     data: JSON.stringify(data),

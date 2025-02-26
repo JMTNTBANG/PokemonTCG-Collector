@@ -1,5 +1,5 @@
 <head>
-  <title>New Adjustment - VGC</title>
+  <title>New Adjustment - PokeTCG</title>
   <link rel="stylesheet" href="styles.css" />
   <script>
     window.onload = () => {
@@ -18,12 +18,12 @@
         .then((response) => response.json())
         .then((json) => {
           document.getElementById("entryID").max = Object.keys(json).length;
-          let titlename = json[parseInt(inputElement.value) - 1].TitleName;
+          let titlename = `${json[parseInt(inputElement.value) - 1].Name} - ${json[parseInt(inputElement.value) - 1].Set}`;
           document.getElementById("item").innerHTML = titlename;
           originalValue = inputElement.value;
           inputElement.addEventListener("input", () => {
             if (inputElement.value !== originalValue) {
-              let titlename = json[parseInt(inputElement.value) - 1].TitleName;
+              let titlename = `${json[parseInt(inputElement.value) - 1].Name} - ${json[parseInt(inputElement.value) - 1].Set}`;
               document.getElementById("item").innerHTML = titlename;
               originalValue = inputElement.value;
             }

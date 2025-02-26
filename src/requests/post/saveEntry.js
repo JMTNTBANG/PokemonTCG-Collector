@@ -3,51 +3,76 @@ const func = require("../../static/func.js");
 module.exports = {
   init: (prefix, website) => {
     website.post(`${prefix}saveEntry`, (request, response) => {
-      if (!request.session.vgc || !request.session.vgc.authenticated) {
+      if (!request.session.poketcg || !request.session.poketcg.authenticated) {
         response.redirect(`${prefix}`);
       } else {
         const ID = request.body.ID;
         let sql = {
-          TitleName: request.body.TitleName,
-          Platform: request.body.Platform,
-          Publisher: request.body.Publisher,
-          ModelNo: request.body.ModelNo,
-          Region: request.body.Region,
-          UPC: request.body.UPC,
-          PurchaseDate: request.body.PurchaseDate,
+          CardType: request.body.CardType,
+          Name: request.body.Name,
+          HP: request.body.HP,
+          Type: request.body.Type,
+          Variant: request.body.Variant,
+          DexNo: request.body.DexNo,
+          Breed: request.body.Breed,
+          Height: request.body.Height,
+          Weight: request.body.Weight,
+          Weakness: request.body.Weakness,
+          Resistance: request.body.Resistance,
+          RetreatCost: request.body.RetreatCost,
+          Description: request.body.Description,
+          Rarity: request.body.Rarity,
+          Set: request.body.Set,
+          SetNo: request.body.SetNo
         };
-        const bools = {
-          HasDisc: request.body.HasDisc,
-          HasBox: request.body.HasBox,
-          HasManuals: request.body.HasManuals,
-          HasOGLiner: request.body.HasOGLiner,
-          IsGraded: request.body.IsGraded,
-        };
-        for (bool in bools) {
-          if (bools[bool] == "on") {
-            sql[bool] = 1;
-          } else if (!bools[bool]) {
-            sql[bool] = 0;
+        let processingAttacks = {}
+        for (i in request.body) {
+          if (i.startsWith("attack")) {
+            if (i.endsWith("Cost")) {
+              if (!processingAttacks[i.slice(6,-5)]) processingAttacks[i.slice(6,-5)] = {}
+              let cost = request.body[i].split(", ")
+              processingAttacks[i.slice(6,-5)].Cost = cost
+            } else if (i.endsWith("Damage")) {
+              if (!processingAttacks[i.slice(6,-7)]) processingAttacks[i.slice(6,-7)] = {}
+              processingAttacks[i.slice(6,-7)].Damage = request.body[i]
+            } else if (i.endsWith("Description")) {
+              if (!processingAttacks[i.slice(6,-12)]) processingAttacks[i.slice(6,-12)] = {}
+              processingAttacks[i.slice(6,-12)].Description = request.body[i]
+            } else if (i.endsWith("Name")) {
+              if (!processingAttacks[i.slice(6,-5)]) processingAttacks[i.slice(6,-5)] = {}
+              processingAttacks[i.slice(6,-5)].Name = request.body[i]
+            }
           }
         }
+        let attacks = []
+        for (i in processingAttacks) {
+          attacks.push(processingAttacks[i])
+        }
+        sql.Attacks = JSON.stringify(attacks)
         func.connectToMySQL(response, (err, db) => {
           if (err) throw err;
           if (!ID) {
             db.query(
-              "INSERT INTO `Gaming`.`Entries` (`TitleName`, `Platform`, `Publisher`, `ModelNo`, `Region`, `HasDisc`, `HasBox`, `HasManuals`, `HasOGLiner`, `IsGraded`, `UPC`, `PurchaseDate`) VALUES (?)",
+              "INSERT INTO `PokemonTCG`.`Cards` (`CardType`, `Name`, `HP`, `Type`, `Variant`, `DexNo`, `Breed`, `Height`, `Weight`, `Attacks`, `Weakness`, `Resistance`, `RetreatCost`, `Description`, `Rarity`, `Set`, `SetNo`) VALUES (?)",
               [
                 [
-                  sql.TitleName,
-                  sql.Platform,
-                  sql.Publisher,
-                  sql.ModelNo,
-                  sql.Region,
-                  sql.HasDisc,
-                  sql.HasBox,
-                  sql.HasManuals,
-                  sql.HasOGLiner,
-                  sql.IsGraded,
-                  sql.UPC,
+                  sql.CardType,
+                  sql.Name,
+                  sql.HP,
+                  sql.Type,
+                  sql.Variant,
+                  sql.DexNo,
+                  sql.Breed,
+                  sql.Height,
+                  sql.Weight,
+                  sql.Attacks,
+                  sql.Weakness,
+                  sql.Resistance,
+                  sql.RetreatCost,
+                  sql.Description,
+                  sql.Rarity,
+                  sql.Set,
+                  sql.SetNo
                 ],
               ],
               (err, result) => {
@@ -60,7 +85,7 @@ module.exports = {
             );
           } else {
             db.query(
-              "UPDATE `Gaming`.`Entries` SET ? WHERE (`ID` = ?);",
+              "UPDATE `PokemonTCG`.`Cards` SET ? WHERE (`ID` = ?);",
               [sql, ID],
               (err, result) => {
                 if (err) {

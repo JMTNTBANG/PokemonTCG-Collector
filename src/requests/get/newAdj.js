@@ -4,12 +4,12 @@ const url = require("url");
 module.exports = {
   init: (prefix, website) => {
     website.get(`${prefix}newAdj`, (request, response) => {
-      if (!request.session.vgc || !request.session.vgc.authenticated) {
+      if (!request.session.poketcg || !request.session.poketcg.authenticated) {
         response.redirect(`${prefix}?redirect=${encodeURIComponent(request.url.slice(1))}`);
       } else {
         func.connectToMySQL(response, (err, db) => {
           if (err) throw err;
-          db.query("SELECT * FROM Gaming.AdjCodes", (err, results, fields) => {
+          db.query("SELECT * FROM PokemonTCG.AdjCodes", (err, results, fields) => {
             if (err) {
               response.send(func.sendError(err));
               return;

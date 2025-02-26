@@ -1,21 +1,41 @@
 <head>
-  <title>Details - VGC</title>
+  <title>Details - PokeTCG</title>
   <link rel="stylesheet" href="styles.css" />
   <script>
-    const bools = {
-      HasDisc: "<%= HasDisc %>",
-      HasBox: "<%= HasBox %>",
-      HasManuals: "<%= HasManuals %>",
-      HasOGLiner: "<%= HasOGLiner %>",
-      IsGraded: "<%= IsGraded %>",
-    };
-    window.onload = () => {
-      for (bool in bools) {
-        if (bools[bool] == "1") {
-          document.getElementById(bool).checked = true;
+    let attacks = 0
+    function createDropdowns(json = undefined) {
+      if (json) {
+        for (attack in json) {
+          let costs = ''
+          let j = 0
+          for (cost of json[attack].Cost) {
+            costs += `${cost}, `
+            j++
+          }
+          costs = costs.slice(0,-2)
+          let damage = json[attack].Damage
+          let description = json[attack].Description
+          if (!description) description = ""
+          document.getElementById("attacks").innerHTML += `<input type="text" id="attack${attacks}_Name" name="attack${attacks}_Name" value="${json[attack].Name}"></input><button type="button" onClick="dropdown('attack${attacks}')").style.display = "block">V</button><br /><div id="attack${attacks}" style="display: none;"><label for="attack${attacks}_Cost">Cost (comma separated): </label><input type="text" name="attack${attacks}_Cost" id="attack${attacks}_Cost" value="${costs}"><br /><label for="attack${attacks}_Damage">Damage: </label><input type="text" style="width: 50px" name="attack${attacks}_Damage" id="attack${attacks}_Damage" value=${damage}><br /><label for="attack${attacks}_Description">Description: </label><textarea type="text" name="attack${attacks}_Description" id="attack${attacks}_Description" style="width: 300px; height: 75px; word-wrap: break-word;">${description}</textarea>`
+          attacks++
         }
+      } else {
+          document.getElementById("attacks").innerHTML += `<input type="text" id="attack${attacks}_Name" name="attack${attacks}_Name"></input><button type="button" onClick="dropdown('attack${attacks}')").style.display = "block">V</button><br /><div id="attack${attacks}" style="display: none;"><label for="attack${attacks}_Cost">Cost (comma separated): </label><input type="text" name="attack${attacks}_Cost" id="attack${attacks}_Cost"><br /><label for="attack${attacks}_Damage">Damage: </label><input type="text" style="width: 50px" name="attack${attacks}_Damage" id="attack${attacks}_Damage"><br /><label for="attack${attacks}_Description">Description: </label><textarea type="text" name="attack${attacks}_Description" id="attack${attacks}_Description" style="width: 300px; height: 75px; word-wrap: break-word;"></textarea>`
+          attacks++
       }
-    };
+    }
+    function dropdown(id) {
+          var element = document.getElementById(id)
+          if (element.style.display === "none") {
+            element.style.display = "block"
+          } else if (element.style.display === "block") {
+            element.style.display = "none"
+          }
+        }
+    window.onload = () => {
+      let attacks = JSON.parse(decodeURIComponent('<%= Attacks %>'))
+      createDropdowns(attacks)
+    }
   </script>
 </head>
 <body>
@@ -33,80 +53,165 @@
         readonly
       />
       <br />
-      <label for="TitleName">Title Name: </label>
+      <label for="CardType">Card Type: </label>
       <input
         type="text"
-        name="TitleName"
-        id="TitleName"
-        value="<%= TitleName %>"
-        style="width: 300px"
+        name="CardType"
+        id="CardType"
+        value="<%= CardType %>"
+        style="width: 150px"
         required
       />
       <br />
-      <label for="Platform">Platform: </label>
+      <label for="Name">Name: </label>
       <input
         type="text"
-        name="Platform"
+        name="Name"
         id="value"
-        value="<%= Platform %>"
-        style="width: 100px"
-        required
-      />
-      <br />
-      <label for="Publisher">Publisher: </label>
-      <input
-        type="text"
-        name="Publisher"
-        id="Publisher"
-        value="<%= Publisher %>"
+        value="<%= Name %>"
         style="width: 200px"
         required
       />
       <br />
-      <label for="ModelNo">Model Number: </label>
+      <label for="HP">HP: </label>
       <input
-        type="text"
-        name="ModelNo"
-        id="ModelNo"
-        value="<%= ModelNo %>"
-        style="width: 100px"
-        required
-      />
-      <br />
-      <label for="Region">Region: </label>
-      <input
-        type="text"
-        name="Region"
-        id="Region"
-        value="<%= Region %>"
+        type="number"
+        name="HP"
+        id="HP"
+        value="<%= HP %>"
         style="width: 50px"
         required
       />
       <br />
-      <label for="HasDisc">Has Disc? </label>
-      <input type="checkbox" name="HasDisc" id="HasDisc" />
-      <br />
-      <label for="HasBox">Has Box? </label>
-      <input type="checkbox" name="HasBox" id="HasBox" />
-      <br />
-      <label for="HasManuals">Has Manuals? </label>
-      <input type="checkbox" name="HasManuals" id="HasManuals" />
-      <br />
-      <label for="HasOGLiner">Has OG Liner? </label>
-      <input type="checkbox" name="HasOGLiner" id="HasOGLiner" />
-      <br />
-      <label for="IsGraded">Is Graded? </label>
-      <input type="checkbox" name="IsGraded" id="IsGraded" />
-      <br />
-      <label for="UPC">UPC: </label>
+      <label for="Type">Type: </label>
       <input
         type="text"
-        name="UPC"
-        id="UPC"
-        value="<%= UPC %>"
+        name="Type"
+        id="Type"
+        value="<%= Type %>"
+        style="width: 100px"
+        required
+      />
+      <br />
+      <label for="Variant">Variant: </label>
+      <input
+        type="text"
+        name="Variant"
+        id="Variant"
+        value="<%= Variant %>"
+        style="width: 150px"
+        required
+      />
+      <br />
+      <label for="DexNo">Pokédex Number: </label>
+      <input
+        type="number"
+        name="DexNo"
+        id="DexNo"
+        value="<%= DexNo %>"
+        style="width: 50px"
+      />
+      <br />
+      <label for="Breed">Breed: </label>
+      <input
+        type="text"
+        name="Breed"
+        id="Breed"
+        value="<%= Breed %>"
+        style="width: 150px"
+      />
+      <br />
+      <label for="Height">Height: </label>
+      <input
+        type="number"
+        name="Height"
+        id="Height"
+        value="<%= Height %>"
+        style="width: 100px"
+        step="0.1"
+      />
+      <br />
+      <label for="Weight">Weight: </label>
+      <input
+        type="number"
+        name="Weight"
+        id="Weight"
+        value="<%= Weight %>"
+        style="width: 100px"
+        step="0.1"
+      />
+      <br />
+      <label for="Weakness">Weakness: </label>
+      <input
+        type="text"
+        name="Weakness"
+        id="Weakness"
+        value="<%= Weakness %>"
+        style="width: 100px"
+      />
+      <br />
+      <label for="Resistance">Resistance: </label>
+      <input
+        type="text"
+        name="Resistance"
+        id="Resistance"
+        value="<%= Resistance %>"
+        style="width: 100px"
+      />
+      <br />
+      <label for="RetreatCost">Retreat Cost: </label>
+      <input
+        type="number"
+        name="RetreatCost"
+        id="RetreatCost"
+        value="<%= RetreatCost %>"
+        style="width: 50px"
+      />
+      <br />
+      <label for="Description">Description: </label>
+      <textarea
+        type="text"
+        name="Description"
+        id="Description"
+        value="<%= Description %>"
+        style="width: 300px; height: 75px; word-wrap: break-word;"
+      /><%= Description %></textarea>
+      <br />
+      <label for="Rarity">Rarity: </label>
+      <input
+        type="text"
+        name="Rarity"
+        id="Rarity"
+        value="<%= Rarity %>"
+        style="width: 100px"
+      />
+      <br />
+      <label for="Set">Set: </label>
+      <input
+        type="text"
+        name="Set"
+        id="Set"
+        value="<%= Set %>"
         style="width: 200px"
       />
-      <br /><input type="submit" value="Save Changes" />
+      <br />
+      <label for="SetNo">Set Number: </label>
+      <input
+        type="number"
+        name="SetNo"
+        id="SetNo"
+        value="<%= SetNo %>"
+        style="width: 50px"
+      />
+      <br />
+      <h2>Attacks</h2>
+      <div id="attacks">
+      </div>
+      <br>
+      <button type="button" onClick="createDropdowns()">Add Attack</button>
+      <br>
+      <br>
+      <input type="submit" value="Save Changes" />
     </form>
   </div>
 </body>

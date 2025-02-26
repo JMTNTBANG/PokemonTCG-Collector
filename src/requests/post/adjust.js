@@ -3,7 +3,7 @@ const func = require("../../static/func.js");
 module.exports = {
   init: (prefix, website) => {
     website.post(`${prefix}adjust`, (request, response) => {
-      if (!request.session.vgc || !request.session.vgc.authenticated) {
+      if (!request.session.poketcg || !request.session.poketcg.authenticated) {
         response.redirect(`${prefix}`);
       } else {
         const entryID = request.body.entryID;
@@ -17,7 +17,7 @@ module.exports = {
         func.connectToMySQL(response, (err, db) => {
           if (err) throw err;
           db.query(
-            "INSERT INTO `Gaming`.`Adjustments` (`EntryID`, `ReasonCode`, `Amount`, `ValuePer`, `DatePurchased`) VALUES (?)",
+            "INSERT INTO `PokemonTCG`.`Adjustments` (`EntryID`, `ReasonCode`, `Amount`, `ValuePer`, `DatePurchased`) VALUES (?)",
             [[entryID, reasonCode, amount, value, datePurchased]],
             (err, result) => {
               if (err) {

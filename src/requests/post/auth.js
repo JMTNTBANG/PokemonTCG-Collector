@@ -9,7 +9,7 @@ module.exports = {
       func.connectToMySQL(response, (err, db) => {
         if (err) throw err;
         db.query(
-          "SELECT * FROM Gaming.Accounts WHERE username = ? AND password = ?",
+          "SELECT * FROM PokemonTCG.Accounts WHERE username = ? AND password = ?",
           [username, password],
           (err, results, fields) => {
             if (err) throw err;
@@ -17,7 +17,7 @@ module.exports = {
               console.log(
                 `Successfully Authenticated ${request.ip} with Username ${username}`
               );
-              request.session.vgc = {
+              request.session.poketcg = {
                 authenticated: true,
                 username: username,
                 userid: results[0].id,

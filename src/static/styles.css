@@ -1,12 +1,12 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #ffe6a8;
+  background-color: #70b3ff;
 }
 
 table,
 th,
 td {
-  background-color: #fdefcb;
+  background-color: #a5cefc;
   border-collapse: collapse;
   text-align: left;
 }

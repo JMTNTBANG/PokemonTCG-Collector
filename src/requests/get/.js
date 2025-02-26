@@ -6,12 +6,12 @@ module.exports = {
     website.engine("html", require("ejs").renderFile);
     website.get(prefix, (request, response) => {
       func.debugOverride(request);
-      if (!request.session.vgc || !request.session.vgc.authenticated) {
+      if (!request.session.poketcg || !request.session.poketcg.authenticated) {
         response.sendFile(`${__dirname.slice(0, -13)}/static/login.html`);
       } else {
         response.render(`${__dirname.slice(0, -13)}/static/home.html`, {
           version: package.version,
-          username: request.session.vgc.username,
+          username: request.session.poketcg.username,
         });
       }
     });

@@ -1,6 +1,6 @@
 {
-  "name": "mysql-video-game-collector",
-  "version": "1.0.0",
+  "name": "mysql-pokemontcg-collector",
+  "version": "0.1.0",
   "description": "Log your Video Game Collection with this MySQL Integrated Web Interface",
   "main": "src/index.js",
   "scripts": {
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JMTNTBANG/MySQL-Video-Game-Collector.git"
+    "url": "git+https://github.com/JMTNTBANG/MySQL-PokemonTCG-Collector.git"
   },
   "author": "JMTNTBANG",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/JMTNTBANG/MySQL-Video-Game-Collector/issues"
+    "url": "https://github.com/JMTNTBANG/MySQL-PokemonTCG-Collector/issues"
   },
-  "homepage": "https://github.com/JMTNTBANG/MySQL-Video-Game-Collector#readme",
+  "homepage": "https://github.com/JMTNTBANG/MySQL-PokemonTCG-Collector#readme",
   "dependencies": {
     "ejs": "^3.1.10",
     "express": "^4.19.2",
