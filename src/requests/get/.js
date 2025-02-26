@@ -5,7 +5,7 @@ module.exports = {
   init: (prefix, website) => {
     website.engine("html", require("ejs").renderFile);
     website.get(prefix, (request, response) => {
-      func.debugOverride(request);
+      // func.debugOverride(request);
       if (!request.session.poketcg || !request.session.poketcg.authenticated) {
         response.sendFile(`${__dirname.slice(0, -13)}/static/login.html`);
       } else {
