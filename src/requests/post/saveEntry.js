@@ -81,6 +81,7 @@ module.exports = {
                   return;
                 }
                 response.send(`<script>window.close()</script>`);
+                db.end();
               }
             );
           } else {
@@ -93,6 +94,7 @@ module.exports = {
                   return;
                 }
                 response.send(`<script>window.close()</script>`);
+                db.end();
               }
             );
           }

@@ -1,6 +1,6 @@
 {
   "name": "mysql-pokemontcg-collector",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Log your Video Game Collection with this MySQL Integrated Web Interface",
   "main": "src/index.js",
   "scripts": {

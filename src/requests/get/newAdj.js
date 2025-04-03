@@ -28,6 +28,7 @@ module.exports = {
               entryID: entryID,
               reasonCodes: reasonCodes,
             });
+            db.end();
           });
         });
       }

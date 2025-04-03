@@ -13,6 +13,7 @@ module.exports = {
             (err, result, fields) => {
               if (err) throw err;
               response.send(result);
+              db.end();
             }
           );
         });

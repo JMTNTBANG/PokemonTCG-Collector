@@ -64,6 +64,7 @@ module.exports = {
                     Attacks: encodeURIComponent(JSON.stringify(entry.Attacks))
                   }
                 );
+                db.end();
               }
             );
           });

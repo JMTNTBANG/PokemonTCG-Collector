@@ -24,6 +24,7 @@ module.exports = {
               };
               let redirect = request.body.redirect
               response.redirect(prefix + redirect);
+              db.end();
             } else {
               console.error(
                 `Failed to Authenticate ${request.ip} with Username ${username}`
@@ -31,6 +32,7 @@ module.exports = {
               response.send(
                 func.sendError("Incorrect Username and/or Password")
               );
+              db.end();
             }
           }
         );
