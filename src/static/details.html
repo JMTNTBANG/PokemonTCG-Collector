@@ -35,7 +35,18 @@
     window.onload = () => {
       let attacks = JSON.parse(decodeURIComponent('<%= Attacks %>'))
       createDropdowns(attacks)
+      const cardTypes = ["Basic Pokémon", "Stage 1 Pokémon", "Stage 2 Pokémon", "VMAX Pokémon", "VSTAR Pokémon", "Trainer", "Energy"]
+      let types = "";
+      for (i of cardTypes) {
+        types += `<option value="${i}"`;
+        if (i == "<%= CardType %>") {
+          types += ' selected'
+        }
+        types += `>${i}</option>`
+      }
+      document.getElementById("CardType").innerHTML = types;
     }
+    
   </script>
 </head>
 <body>
@@ -54,14 +65,7 @@
       />
       <br />
       <label for="CardType">Card Type: </label>
-      <input
-        type="text"
-        name="CardType"
-        id="CardType"
-        value="<%= CardType %>"
-        style="width: 150px"
-        required
-      />
+      <select type="text" name="CardType" id="CardType"/></select>
       <br />
       <label for="Name">Name: </label>
       <input
