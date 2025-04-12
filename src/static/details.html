@@ -2,62 +2,95 @@
   <title>Details - PokeTCG</title>
   <link rel="stylesheet" href="styles.css" />
   <script>
-    let attacks = 0
+    let attacks = 0;
     function createDropdowns(json = undefined) {
       if (json) {
         for (attack in json) {
-          let costs = ''
-          let j = 0
+          let costs = "";
+          let j = 0;
           for (cost of json[attack].Cost) {
-            costs += `${cost}, `
-            j++
+            costs += `${cost}, `;
+            j++;
           }
-          costs = costs.slice(0,-2)
-          let damage = json[attack].Damage
-          let description = json[attack].Description
-          if (!description) description = ""
-          document.getElementById("attacks").innerHTML += `<input type="text" id="attack${attacks}_Name" name="attack${attacks}_Name" value="${json[attack].Name}"></input><button type="button" onClick="dropdown('attack${attacks}')").style.display = "block">V</button><br /><div id="attack${attacks}" style="display: none;"><label for="attack${attacks}_Cost">Cost (comma separated): </label><input type="text" name="attack${attacks}_Cost" id="attack${attacks}_Cost" value="${costs}"><br /><label for="attack${attacks}_Damage">Damage: </label><input type="text" style="width: 50px" name="attack${attacks}_Damage" id="attack${attacks}_Damage" value=${damage}><br /><label for="attack${attacks}_Description">Description: </label><textarea type="text" name="attack${attacks}_Description" id="attack${attacks}_Description" style="width: 300px; height: 75px; word-wrap: break-word;">${description}</textarea>`
-          attacks++
+          costs = costs.slice(0, -2);
+          let damage = json[attack].Damage;
+          let description = json[attack].Description;
+          if (!description) description = "";
+          document.getElementById(
+            "attacks"
+          ).innerHTML += `<input type="text" id="attack${attacks}_Name" name="attack${attacks}_Name" value="${json[attack].Name}"></input><button type="button" onClick="dropdown('attack${attacks}')").style.display = "block">V</button><br /><div id="attack${attacks}" style="display: none;"><label for="attack${attacks}_Cost">Cost (comma separated): </label><input type="text" name="attack${attacks}_Cost" id="attack${attacks}_Cost" value="${costs}"><br /><label for="attack${attacks}_Damage">Damage: </label><input type="text" style="width: 50px" name="attack${attacks}_Damage" id="attack${attacks}_Damage" value=${damage}><br /><label for="attack${attacks}_Description">Description: </label><textarea type="text" name="attack${attacks}_Description" id="attack${attacks}_Description" style="width: 300px; height: 75px; word-wrap: break-word;">${description}</textarea>`;
+          attacks++;
         }
       } else {
-          document.getElementById("attacks").innerHTML += `<input type="text" id="attack${attacks}_Name" name="attack${attacks}_Name"></input><button type="button" onClick="dropdown('attack${attacks}')").style.display = "block">V</button><br /><div id="attack${attacks}" style="display: none;"><label for="attack${attacks}_Cost">Cost (comma separated): </label><input type="text" name="attack${attacks}_Cost" id="attack${attacks}_Cost"><br /><label for="attack${attacks}_Damage">Damage: </label><input type="text" style="width: 50px" name="attack${attacks}_Damage" id="attack${attacks}_Damage"><br /><label for="attack${attacks}_Description">Description: </label><textarea type="text" name="attack${attacks}_Description" id="attack${attacks}_Description" style="width: 300px; height: 75px; word-wrap: break-word;"></textarea>`
-          attacks++
+        document.getElementById(
+          "attacks"
+        ).innerHTML += `<input type="text" id="attack${attacks}_Name" name="attack${attacks}_Name"></input><button type="button" onClick="dropdown('attack${attacks}')").style.display = "block">V</button><br /><div id="attack${attacks}" style="display: none;"><label for="attack${attacks}_Cost">Cost (comma separated): </label><input type="text" name="attack${attacks}_Cost" id="attack${attacks}_Cost"><br /><label for="attack${attacks}_Damage">Damage: </label><input type="text" style="width: 50px" name="attack${attacks}_Damage" id="attack${attacks}_Damage"><br /><label for="attack${attacks}_Description">Description: </label><textarea type="text" name="attack${attacks}_Description" id="attack${attacks}_Description" style="width: 300px; height: 75px; word-wrap: break-word;"></textarea>`;
+        attacks++;
       }
     }
     function dropdown(id) {
-          var element = document.getElementById(id)
-          if (element.style.display === "none") {
-            element.style.display = "block"
-          } else if (element.style.display === "block") {
-            element.style.display = "none"
-          }
-        }
+      var element = document.getElementById(id);
+      if (element.style.display === "none") {
+        element.style.display = "block";
+      } else if (element.style.display === "block") {
+        element.style.display = "none";
+      }
+    }
     window.onload = () => {
-      let attacks = JSON.parse(decodeURIComponent('<%= Attacks %>'))
-      createDropdowns(attacks)
-      const cardTypes = ["Basic Pokémon", "Stage 1 Pokémon", "Stage 2 Pokémon", "VMAX Pokémon", "VSTAR Pokémon", "Trainer", "Energy"]
+      let attacks = JSON.parse(decodeURIComponent("<%= Attacks %>"));
+      createDropdowns(attacks);
+      const cardTypes = [
+        "Basic Pokémon",
+        "Stage 1 Pokémon",
+        "Stage 2 Pokémon",
+        "VMAX Pokémon",
+        "VSTAR Pokémon",
+        "Trainer",
+        "Energy",
+      ];
       let types = "";
       for (i of cardTypes) {
         types += `<option value="${i}"`;
         if (i == "<%= CardType %>") {
-          types += ' selected'
+          types += " selected";
         }
-        types += `>${i}</option>`
+        types += `>${i}</option>`;
       }
       document.getElementById("CardType").innerHTML = types;
 
-      const pokemonTypes = ["Grass", "Fire", "Water", "Lightning", "Fighting", "Psychic", "Colorless", "Darkness", "Metal", "Dragon", "Fairy"]
+      const pokemonTypes = [
+        "Grass",
+        "Fire",
+        "Water",
+        "Lightning",
+        "Fighting",
+        "Psychic",
+        "Colorless",
+        "Darkness",
+        "Metal",
+        "Dragon",
+        "Fairy",
+      ];
       let pktypes = "";
       for (i of pokemonTypes) {
         pktypes += `<option value="${i}"`;
         if (i == "<%= Type %>") {
-          pktypes += ' selected'
+          pktypes += " selected";
         }
-        pktypes += `>${i}</option>`
+        pktypes += `>${i}</option>`;
       }
       document.getElementById("Type").innerHTML = pktypes;
-    }
-    
+      const variants1 = ["Normal", "Reverse Holo", "Rare Holo", "Ultra Rare"];
+      let variants2 = "";
+      for (i of variants1) {
+        variants2 += `<option value="${i}"`;
+        if (i == "<%= Variant %>") {
+          variants2 += " selected";
+        }
+        variants2 += `>${i}</option>`;
+      }
+      document.getElementById("Variant").innerHTML = variants2;
+    };
   </script>
 </head>
 <body>
@@ -101,14 +134,7 @@
       <select name="Type" id="Type"></select>
       <br />
       <label for="Variant">Variant: </label>
-      <input
-        type="text"
-        name="Variant"
-        id="Variant"
-        value="<%= Variant %>"
-        style="width: 150px"
-        required
-      />
+      <select name="Variant" id="Variant"></select>
       <br />
       <label for="DexNo">Pokédex Number: </label>
       <input
@@ -181,8 +207,10 @@
         name="Description"
         id="Description"
         value="<%= Description %>"
-        style="width: 300px; height: 75px; word-wrap: break-word;"
-      /><%= Description %></textarea>
+        style="width: 300px; height: 75px; word-wrap: break-word"
+      >
+        <%= Description %></textarea
+      >
       <br />
       <label for="Rarity">Rarity: </label>
       <input
@@ -212,12 +240,11 @@
       />
       <br />
       <h2>Attacks</h2>
-      <div id="attacks">
-      </div>
-      <br>
+      <div id="attacks"></div>
+      <br />
       <button type="button" onClick="createDropdowns()">Add Attack</button>
-      <br>
-      <br>
+      <br />
+      <br />
       <input type="submit" value="Save Changes" />
     </form>
   </div>
