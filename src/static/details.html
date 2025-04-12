@@ -45,6 +45,17 @@
         types += `>${i}</option>`
       }
       document.getElementById("CardType").innerHTML = types;
+
+      const pokemonTypes = ["Grass", "Fire", "Water", "Lightning", "Fighting", "Psychic", "Colorless", "Darkness", "Metal", "Dragon", "Fairy"]
+      let pktypes = "";
+      for (i of pokemonTypes) {
+        pktypes += `<option value="${i}"`;
+        if (i == "<%= Type %>") {
+          pktypes += ' selected'
+        }
+        pktypes += `>${i}</option>`
+      }
+      document.getElementById("Type").innerHTML = pktypes;
     }
     
   </script>
@@ -65,7 +76,7 @@
       />
       <br />
       <label for="CardType">Card Type: </label>
-      <select type="text" name="CardType" id="CardType"/></select>
+      <select name="CardType" id="CardType"></select>
       <br />
       <label for="Name">Name: </label>
       <input
@@ -87,14 +98,7 @@
       />
       <br />
       <label for="Type">Type: </label>
-      <input
-        type="text"
-        name="Type"
-        id="Type"
-        value="<%= Type %>"
-        style="width: 100px"
-        required
-      />
+      <select name="Type" id="Type"></select>
       <br />
       <label for="Variant">Variant: </label>
       <input
