@@ -59,6 +59,7 @@
       document.getElementById("CardType").innerHTML = types;
 
       const pokemonTypes = [
+        "None",
         "Grass",
         "Fire",
         "Water",
@@ -70,6 +71,10 @@
         "Metal",
         "Dragon",
         "Fairy",
+        "Item",
+        "Pokémon Tool",
+        "Supporter",
+        "Stadium"
       ];
       let pktypes = "";
       for (i of pokemonTypes) {
@@ -90,6 +95,26 @@
         variants2 += `>${i}</option>`;
       }
       document.getElementById("Variant").innerHTML = variants2;
+
+      let weakness2 = "";
+      for (i of pokemonTypes) {
+        weakness2 += `<option value="${i} x2"`;
+        if (`${i} x2` == "<%= Weakness %>") {
+          weakness2 += " selected";
+        }
+        weakness2 += `>${i} x2</option>`;
+      }
+      document.getElementById("Weakness").innerHTML = weakness2;
+
+      let resistance2 = "";
+      for (i of pokemonTypes) {
+        resistance2 += `<option value="${i} -30"`;
+        if (`${i} -30` == "<%= Resistance %>") {
+          resistance2 += " selected";
+        }
+        resistance2 += `>${i} -30</option>`;
+      }
+      document.getElementById("Resistance").innerHTML = resistance2;
     };
   </script>
 </head>
@@ -175,22 +200,10 @@
       />
       <br />
       <label for="Weakness">Weakness: </label>
-      <input
-        type="text"
-        name="Weakness"
-        id="Weakness"
-        value="<%= Weakness %>"
-        style="width: 100px"
-      />
+      <select name="Weakness" id="Weakness"></select>
       <br />
       <label for="Resistance">Resistance: </label>
-      <input
-        type="text"
-        name="Resistance"
-        id="Resistance"
-        value="<%= Resistance %>"
-        style="width: 100px"
-      />
+      <select name="Resistance" id="Resistance"></select>
       <br />
       <label for="RetreatCost">Retreat Cost: </label>
       <input
