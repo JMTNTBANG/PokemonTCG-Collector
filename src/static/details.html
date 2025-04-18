@@ -115,6 +115,30 @@
         resistance2 += `>${i} -30</option>`;
       }
       document.getElementById("Resistance").innerHTML = resistance2;
+
+      const rarity = [
+        "Common",
+        "Uncommon",
+        "Rare",
+        "Ultra-Rare Rare",
+        "Double Rare",
+        "Ultra Rare",
+        "Illustration Rare",
+        "Special Illustration Rare",
+        "Hyper Rare",
+        "Shiny Rare",
+        "Shiny Ultra Rare",
+        "ACE SPEC Rare"
+      ];
+      let rarity2 = "";
+      for (i of rarity) {
+        rarity2 += `<option value="${i}"`;
+        if (i == "<%= Rarity %>") {
+          rarity2 += " selected";
+        }
+        rarity2 += `>${i}</option>`;
+      }
+      document.getElementById("Rarity").innerHTML = rarity2;
     };
   </script>
 </head>
@@ -226,13 +250,7 @@
       >
       <br />
       <label for="Rarity">Rarity: </label>
-      <input
-        type="text"
-        name="Rarity"
-        id="Rarity"
-        value="<%= Rarity %>"
-        style="width: 100px"
-      />
+      <select name="Rarity" id="Rarity"></select>
       <br />
       <label for="Set">Set: </label>
       <input
