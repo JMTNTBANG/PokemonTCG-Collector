@@ -36,9 +36,10 @@ module.exports = {
                   "RetreatCost",
                   "Rarity",
                   "DateAdded",
+                  "Type"
                 ];
                 let header = [];
-                header.push("Actions", "Qty", "Includes");
+                header.push("Actions", "Qty", "Type");
                 for (field in fields) {
                   if (hiddenColumns.includes(fields[field].name)) continue;
                   header.push(fields[field].name);
@@ -63,20 +64,7 @@ module.exports = {
                   }
                   let i = [];
                   i.push(`%ID%${row[1].ID}\\nDetails`, qty);
-                  let iconCode = 0;
-                  if (row[1].HasDisc == 1) {
-                    iconCode += 1;
-                  }
-                  if (row[1].HasBox == 1) {
-                    iconCode += 2;
-                  }
-                  if (row[1].HasManuals == 1) {
-                    iconCode += 4;
-                  }
-                  if (row[1].HasOGLiner == 1) {
-                    iconCode += 8;
-                  }
-                  i.push(`%IMG%${iconCode}\\n`);
+                  i.push(`%IMG%${row[1].Type}\\n`);
                   for (column in row[1]) {
                     if (hiddenColumns.includes(column)) continue;
                     let newColumn = row[1][column];
