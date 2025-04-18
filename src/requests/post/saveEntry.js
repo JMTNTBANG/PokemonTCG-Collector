@@ -15,7 +15,6 @@ module.exports = {
           Variant: request.body.Variant,
           DexNo: request.body.DexNo,
           Breed: request.body.Breed,
-          Height: request.body.Height,
           Weight: request.body.Weight,
           Weakness: request.body.Weakness,
           Resistance: request.body.Resistance,
@@ -49,6 +48,7 @@ module.exports = {
           attacks.push(processingAttacks[i])
         }
         sql.Attacks = JSON.stringify(attacks)
+        sql.Height = parseInt(request.body.HeightFt) * 12 + parseInt(request.body.HeightIn)
         func.connectToMySQL(response, (err, db) => {
           if (err) throw err;
           if (!ID) {

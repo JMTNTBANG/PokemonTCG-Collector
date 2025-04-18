@@ -139,6 +139,13 @@
         rarity2 += `>${i}</option>`;
       }
       document.getElementById("Rarity").innerHTML = rarity2;
+
+      let height = '<%= Height %>'
+      height = parseInt(height)
+      let feet = Math.floor(height / 12)
+      let inch = height - (feet * 12)
+      document.getElementById("HeightFt").value = feet
+      document.getElementById("HeightIn").value = inch
     };
   </script>
 </head>
@@ -206,12 +213,18 @@
       <label for="Height">Height: </label>
       <input
         type="number"
-        name="Height"
-        id="Height"
-        value="<%= Height %>"
-        style="width: 100px"
-        step="0.1"
-      />
+        name="HeightFt"
+        id="HeightFt"
+        style="width: 50px"
+        step="1"
+      /> ft
+      <input
+        type="number"
+        name="HeightIn"
+        id="HeightIn"
+        style="width: 50px"
+        step="1"
+      /> in
       <br />
       <label for="Weight">Weight: </label>
       <input
