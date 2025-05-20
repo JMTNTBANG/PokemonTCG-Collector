@@ -2,6 +2,17 @@ const fs = require("fs");
 const http = require("http");
 const mysql = require("mysql2");
 
+function sha256(string) {
+  const utf8 = new TextEncoder().encode(string);
+  return crypto.subtle.digest("SHA-256", utf8).then((hashBuffer) => {
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+      .map((bytes) => bytes.toString(16).padStart(2, "0"))
+      .join("");
+    return hashHex;
+  });
+}
+
 const express = require("express");
 const session = require("express-session");
 
@@ -65,7 +76,19 @@ website.post("/databaseFetch", (request, response) => {
               if (err) {
                 response.send({ err: err });
               } else {
-                response.send({ cards: cards, adjustments: adjustments });
+                if (request.body.auth) {
+                  sha256(
+                    JSON.stringify({ cards: cards, adjustments: adjustments })
+                  ).then((hash) => {
+                    if (request.body.offlineCache == hash) {
+                      response.send({ message: "NoDiff" });
+                    } else {
+                      response.send({ cards: cards, adjustments: adjustments });
+                    }
+                  });
+                } else {
+                  response.send({ message: "NoAuth" });
+                }
               }
               db.end();
             }
