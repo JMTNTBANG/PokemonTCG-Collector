@@ -1,9 +1,9 @@
 services:
-    poketcg.jmtntbang.com:
-        container_name: poketcg.jmtntbang.com
+  PokemonTCGCollector:
+        container_name: PokemonTCGCollector
         network_mode: bridge
         working_dir: /app
         ports:
             - 55002:80
         restart: always
-        image: poketcg.jmtntbang.com:latest
+        image: pokemontcgcollector:latest
