@@ -1,0 +1,9 @@
+services:
+  PokemonTCGCollector:
+        container_name: PokemonTCGCollector
+        network_mode: bridge
+        working_dir: /app
+        ports:
+            - 55002:80
+        restart: always
+        image: pokemontcgcollector:latest
