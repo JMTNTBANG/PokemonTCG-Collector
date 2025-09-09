@@ -158,6 +158,130 @@ export async function createSession(user: User): Promise<Session> {
     return new Session(await getAsync('INSERT INTO Sessions (SessionID, UserID, UUID, Expiration) VALUES (?, ?, ?, ?) RETURNING *', [id, user.UserID, crypto.randomUUID(), Date.now() + 3600000]))
 }
 
+type CardType = "Basic" | "Stage 1" | "Stage 2" | "Trainer" | "Energy"
+type Type = "Grass" | "Fire" | "Water" | "Lightning" | "Fighting" | "Psychic" | "Colorless" | "Darkness" | "Metal" | "Dragon" | "Fairy" | "Item" | "Stadium" | "Supporter"
+interface Ability {
+    Name: string;
+    Description: string;
+}
+interface Attack {
+    Cost: Array<Type>;
+    Name: string;
+    Description: string;
+    Damage: number;
+    Modifier: "Add" | "Multiply" | null
+}
+type Rarity = "Common" | "Uncommon" | "Rare" | "Double Rare" | "Ultra Rare" | "Illustration Rare" | "Special Illustration Rare" | "Hyper Rare" | "Promo"
+type Print = "Normal" | "Reverse Holo" | "Rare Holo"
+interface CardData {
+    CardID: number;
+    UserID: number;
+    CardType: CardType;
+    Name: string;
+    Parent: Card | null;
+    HP: number | null;
+    Type: Type;
+    DexNo: number | null;
+    Breed: string | null;
+    Height: number | null;
+    Weight: number | null;
+    Ability: Ability | null;
+    Attacks: Array<Attack> | null;
+    Weakness: Type | null;
+    Resistance: Type | null;
+    RetreatCost: number | null;
+    Set: string;
+    SetNumber: number;
+    Rarity: Rarity;
+    Print: Print;
+    Lore: string | null;
+    DateCreated: string | Date;
+}
+export class Card implements CardData {
+    CardID: number;
+    UserID: number;
+    CardType: CardType;
+    Name: string;
+    Parent: Card | null;
+    HP: number | null;
+    Type: Type;
+    DexNo: number | null;
+    Breed: string | null;
+    Height: number | null;
+    Weight: number | null;
+    Ability: Ability | null;
+    Attacks: Array<Attack> | null;
+    Weakness: Type | null;
+    Resistance: Type | null;
+    RetreatCost: number | null;
+    Set: string;
+    SetNumber: number;
+    Rarity: Rarity;
+    Print: Print;
+    Lore: string | null;
+    DateCreated: Date;
+    constructor(dbOutput: unknown) {
+        if (
+            typeof dbOutput === 'object' && dbOutput !== null &&
+            'CardID' in dbOutput && typeof (dbOutput as any).CardID === 'number' &&
+            'UserID' in dbOutput && typeof (dbOutput as any).UserID === 'number' &&
+            'CardType' in dbOutput && typeof (dbOutput as any).CardType === 'string' &&
+            'Name' in dbOutput && typeof (dbOutput as any).Name === 'string' &&
+            'Parent' in dbOutput && (typeof (dbOutput as any).Parent === 'object' || (dbOutput as any).Parent === null) &&
+            'HP' in dbOutput && (typeof (dbOutput as any).HP === 'number' || (dbOutput as any).HP === null) &&
+            'Type' in dbOutput && typeof (dbOutput as any).Type === 'string' &&
+            'DexNo' in dbOutput && (typeof (dbOutput as any).DexNo === 'number' || (dbOutput as any).DexNo === null) &&
+            'Breed' in dbOutput && (typeof (dbOutput as any).Breed === 'string' || (dbOutput as any).Breed === null) &&
+            'Height' in dbOutput && (typeof (dbOutput as any).Height === 'number' || (dbOutput as any).Height === null) &&
+            'Weight' in dbOutput && (typeof (dbOutput as any).Weight === 'number' || (dbOutput as any).Weight === null) &&
+            'Ability' in dbOutput && (typeof (dbOutput as any).Ability === 'object' || (dbOutput as any).Ability === null) &&
+            'Attacks' in dbOutput && (Array.isArray((dbOutput as any).Attacks) || (dbOutput as any).Attacks === null) &&
+            'Weakness' in dbOutput && (typeof (dbOutput as any).Weakness === 'string' || (dbOutput as any).Weakness === null) &&
+            'Resistance' in dbOutput && (typeof (dbOutput as any).Resistance === 'string' || (dbOutput as any).Resistance === null) &&
+            'RetreatCost' in dbOutput && (typeof (dbOutput as any).RetreatCost === 'number' || (dbOutput as any).RetreatCost === null) &&
+            'Set' in dbOutput && typeof (dbOutput as any).Set === 'string' &&
+            'SetNumber' in dbOutput && typeof (dbOutput as any).SetNumber === 'number' &&
+            'Rarity' in dbOutput && typeof (dbOutput as any).Rarity === 'string' &&
+            'Print' in dbOutput && typeof (dbOutput as any).Print === 'string' &&
+            'Lore' in dbOutput && (typeof (dbOutput as any).Lore === 'string' || (dbOutput as any).Lore === null) &&
+            'DateCreated' in dbOutput
+        ) {
+            const cardData = dbOutput as CardData;
+
+            this.CardID = cardData.CardID;
+            this.UserID = cardData.UserID;
+            this.CardType = cardData.CardType;
+            this.Name = cardData.Name;
+            this.Parent = cardData.Parent;
+            this.HP = cardData.HP;
+            this.Type = cardData.Type;
+            this.DexNo = cardData.DexNo;
+            this.Breed = cardData.Breed;
+            this.Height = cardData.Height;
+            this.Weight = cardData.Weight;
+            this.Ability = cardData.Ability;
+            this.Attacks = cardData.Attacks;
+            this.Weakness = cardData.Weakness;
+            this.Resistance = cardData.Resistance;
+            this.RetreatCost = cardData.RetreatCost;
+            this.Set = cardData.Set;
+            this.SetNumber = cardData.SetNumber;
+            this.Rarity = cardData.Rarity;
+            this.Print = cardData.Print;
+            this.Lore = cardData.Lore;
+
+            if (typeof cardData.DateCreated === 'string') {
+                this.DateCreated = new Date(cardData.DateCreated);
+            } else {
+                this.DateCreated = cardData.DateCreated;
+            }
+
+        } else {
+            throw new Error("Not A Card");
+        }
+    }
+}
+
 const server: express.Application = express();
 const port: number = 80;
 const endpoint: string = "/"
