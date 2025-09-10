@@ -282,6 +282,49 @@ export class Card implements CardData {
     }
 }
 
+type AdjustmentReason = "Received" | "Sold" | "Donation" | "Lost"
+interface AdjustmentData {
+    CardID: number;
+    UserID: number;
+    Amount: number;
+    ReasonCode: AdjustmentReason;
+    DateCreated: string | Date;
+}
+export class Adjustment implements AdjustmentData {
+    CardID: number;
+    UserID: number;
+    Amount: number;
+    ReasonCode: AdjustmentReason;
+    DateCreated: Date;
+
+    constructor(dbOutput: unknown) {
+        if (
+            typeof dbOutput === 'object' && dbOutput !== null &&
+            'CardID' in dbOutput && typeof (dbOutput as any).CardID === 'number' &&
+            'UserID' in dbOutput && typeof (dbOutput as any).UserID === 'number' &&
+            'Amount' in dbOutput && typeof (dbOutput as any).Amount === 'number' &&
+            'ReasonCode' in dbOutput && typeof (dbOutput as any).ReasonCode === 'string' &&
+            'DateCreated' in dbOutput
+        ) {
+            const adjustmentData = dbOutput as AdjustmentData;
+
+            this.CardID = adjustmentData.CardID;
+            this.UserID = adjustmentData.UserID;
+            this.Amount = adjustmentData.Amount;
+            this.ReasonCode = adjustmentData.ReasonCode;
+
+            if (typeof adjustmentData.DateCreated === 'string') {
+                this.DateCreated = new Date(adjustmentData.DateCreated);
+            } else {
+                this.DateCreated = adjustmentData.DateCreated;
+            }
+
+        } else {
+            throw new Error("Not an Adjustment");
+        }
+    }
+}
+
 const server: express.Application = express();
 const port: number = 80;
 const endpoint: string = "/"
