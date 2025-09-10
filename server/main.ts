@@ -281,9 +281,17 @@ export class Card implements CardData {
         }
     }
 }
+export async function createCard(user: User, cardData: CardData): Promise<Card> {
+    const idLocation = await getAsync('SELECT * FROM IDLocation WHERE "Table" = ?', ["Cards"]);
+    let id: number;
+    if (typeof(idLocation.Location) === "number") id = idLocation.Location; else throw Error("Not a Card");
+    await getAsync('UPDATE IDLocation SET Location = ? WHERE "Table" = ?', [id + 1, "Cards"])
+    return new Card(await getAsync('INSERT INTO Cards (CardID, UserID, CardType, Name, Parent, HP, Type, DexNo, Breed, Height, Weight, Ability, Attacks, Weakness, Resistance, RetreatCost, Set, SetNumber, Rarity, Print, Lore) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING *', [id, user.UserID, cardData.CardType, cardData.Name, JSON.stringify(cardData.Parent), cardData.HP, cardData.Type, cardData.DexNo, cardData.Breed, cardData.Height, cardData.Weight, JSON.stringify(cardData.Ability), JSON.stringify(cardData.Attacks), cardData.Weakness, cardData.Resistance, cardData.RetreatCost, cardData.Set, cardData.SetNumber, cardData.Rarity, cardData.Print, cardData.Lore]))
+}
 
 type AdjustmentReason = "Received" | "Sold" | "Donation" | "Lost"
 interface AdjustmentData {
+    AdjustmentID: number;
     CardID: number;
     UserID: number;
     Amount: number;
@@ -291,6 +299,7 @@ interface AdjustmentData {
     DateCreated: string | Date;
 }
 export class Adjustment implements AdjustmentData {
+    AdjustmentID: number;
     CardID: number;
     UserID: number;
     Amount: number;
@@ -300,6 +309,7 @@ export class Adjustment implements AdjustmentData {
     constructor(dbOutput: unknown) {
         if (
             typeof dbOutput === 'object' && dbOutput !== null &&
+            'AdjustmentID' in dbOutput && typeof (dbOutput as any).AdjustmentID === 'number' &&
             'CardID' in dbOutput && typeof (dbOutput as any).CardID === 'number' &&
             'UserID' in dbOutput && typeof (dbOutput as any).UserID === 'number' &&
             'Amount' in dbOutput && typeof (dbOutput as any).Amount === 'number' &&
@@ -308,6 +318,7 @@ export class Adjustment implements AdjustmentData {
         ) {
             const adjustmentData = dbOutput as AdjustmentData;
 
+            this.AdjustmentID = adjustmentData.AdjustmentID;
             this.CardID = adjustmentData.CardID;
             this.UserID = adjustmentData.UserID;
             this.Amount = adjustmentData.Amount;
@@ -324,6 +335,13 @@ export class Adjustment implements AdjustmentData {
         }
     }
 }
+export async function createAdjustment(user: User, card: Card, adjustmentData: AdjustmentData): Promise<Adjustment> {
+    const idLocation = await getAsync('SELECT * FROM IDLocation WHERE "Table" = ?', ["Adjustments"]);
+    let id: number;
+    if (typeof(idLocation.Location) === "number") id = idLocation.Location; else throw Error("Not an Adjustment");
+    await getAsync('UPDATE IDLocation SET Location = ? WHERE "Table" = ?', [id + 1, "Adjustments"])
+    return new Adjustment(await getAsync('INSERT INTO Adjustments (AdjustmentID, CardID, UserID, Amount, ReasonCode) VALUES (?,?,?,?,?) RETURNING *', [id, card.CardID, user.UserID, adjustmentData.Amount, adjustmentData.ReasonCode]))
+}
 
 const server: express.Application = express();
 const port: number = 80;
@@ -337,8 +355,12 @@ if (!initialized) {
         await runAsync("CREATE TABLE IDLocation ( 'Table' VARCHAR(255) PRIMARY KEY, Location INT DEFAULT 0 )")
         await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Users')")
         await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Sessions')")
+        await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Cards')")
+        await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Adjustments')")
         await runAsync("CREATE TABLE Users ( UserID INT PRIMARY KEY, Username VARCHAR(255), Password VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
         await runAsync("CREATE TABLE Sessions ( SessionID INT PRIMARY KEY, UserID INT, UUID VARCHAR(255), Expiration DATETIME, DateCreated DATETIME DEFAULT current_timestamp )")
+        await runAsync("CREATE TABLE Cards ( CardID INT PRIMARY KEY, UserID INT, CardType VARCHAR(255), Name VARCHAR(255), Parent JSON, HP INT, Type VARCHAR(255), DexNo INT, Breed VARCHAR(255), Height VARCHAR(255), Weight VARCHAR(255), Ability JSON, Attacks JSON, Weakness VARCHAR(255), Resistance VARCHAR(255), RetreatCost INT, 'Set' VARCHAR(255), SetNumber INT, Rarity VARCHAR(255), Print VARCHAR(255), Lore VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
+        await runAsync("CREATE TABLE Adjustments ( AdjustmentID INT PRIMARY KEY, CardID INT, UserID INT, Amount INT, ReasonCode VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
     } catch (error) {
         console.error('Error Initializing Database:', error);
     }
