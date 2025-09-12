@@ -1,0 +1,293 @@
+<head>
+  <title>Details - PokeTCG</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    let attacks = 0;
+    function createDropdowns(json = undefined) {
+      if (json) {
+        for (attack in json) {
+          let costs = "";
+          let j = 0;
+          for (cost of json[attack].Cost) {
+            costs += `${cost}, `;
+            j++;
+          }
+          costs = costs.slice(0, -2);
+          let damage = json[attack].Damage;
+          let description = json[attack].Description;
+          if (!description) description = "";
+          document.getElementById(
+            "attacks"
+          ).innerHTML += `<input type="text" id="attack${attacks}_Name" name="attack${attacks}_Name" value="${json[attack].Name}"></input><button type="button" onClick="dropdown('attack${attacks}')").style.display = "block">V</button><br /><div id="attack${attacks}" style="display: none;"><label for="attack${attacks}_Cost">Cost (comma separated): </label><input type="text" name="attack${attacks}_Cost" id="attack${attacks}_Cost" value="${costs}"><br /><label for="attack${attacks}_Damage">Damage: </label><input type="text" style="width: 50px" name="attack${attacks}_Damage" id="attack${attacks}_Damage" value=${damage}><br /><label for="attack${attacks}_Description">Description: </label><textarea type="text" name="attack${attacks}_Description" id="attack${attacks}_Description" style="width: 300px; height: 75px; word-wrap: break-word;">${description}</textarea>`;
+          attacks++;
+        }
+      } else {
+        document.getElementById(
+          "attacks"
+        ).innerHTML += `<input type="text" id="attack${attacks}_Name" name="attack${attacks}_Name"></input><button type="button" onClick="dropdown('attack${attacks}')").style.display = "block">V</button><br /><div id="attack${attacks}" style="display: none;"><label for="attack${attacks}_Cost">Cost (comma separated): </label><input type="text" name="attack${attacks}_Cost" id="attack${attacks}_Cost"><br /><label for="attack${attacks}_Damage">Damage: </label><input type="text" style="width: 50px" name="attack${attacks}_Damage" id="attack${attacks}_Damage"><br /><label for="attack${attacks}_Description">Description: </label><textarea type="text" name="attack${attacks}_Description" id="attack${attacks}_Description" style="width: 300px; height: 75px; word-wrap: break-word;"></textarea>`;
+        attacks++;
+      }
+    }
+    function dropdown(id) {
+      var element = document.getElementById(id);
+      if (element.style.display === "none") {
+        element.style.display = "block";
+      } else if (element.style.display === "block") {
+        element.style.display = "none";
+      }
+    }
+    window.onload = () => {
+      let attacks = JSON.parse(decodeURIComponent("<%= Attacks %>"));
+      createDropdowns(attacks);
+      const cardTypes = [
+        "Basic Pokémon",
+        "Stage 1 Pokémon",
+        "Stage 2 Pokémon",
+        "VMAX Pokémon",
+        "VSTAR Pokémon",
+        "Trainer",
+        "Energy",
+      ];
+      let types = "";
+      for (i of cardTypes) {
+        types += `<option value="${i}"`;
+        if (i == "<%= CardType %>") {
+          types += " selected";
+        }
+        types += `>${i}</option>`;
+      }
+      document.getElementById("CardType").innerHTML = types;
+
+      const pokemonTypes = [
+        "None",
+        "Grass",
+        "Fire",
+        "Water",
+        "Lightning",
+        "Fighting",
+        "Psychic",
+        "Colorless",
+        "Darkness",
+        "Metal",
+        "Dragon",
+        "Fairy",
+        "Item",
+        "Pokémon Tool",
+        "Supporter",
+        "Stadium"
+      ];
+      let pktypes = "";
+      for (i of pokemonTypes) {
+        pktypes += `<option value="${i}"`;
+        if (i == "<%= Type %>") {
+          pktypes += " selected";
+        }
+        pktypes += `>${i}</option>`;
+      }
+      document.getElementById("Type").innerHTML = pktypes;
+      const variants1 = ["Normal", "Reverse Holo", "Rare Holo", "Ultra Rare"];
+      let variants2 = "";
+      for (i of variants1) {
+        variants2 += `<option value="${i}"`;
+        if (i == "<%= Variant %>") {
+          variants2 += " selected";
+        }
+        variants2 += `>${i}</option>`;
+      }
+      document.getElementById("Variant").innerHTML = variants2;
+
+      let weakness2 = "";
+      for (i of pokemonTypes) {
+        weakness2 += `<option value="${i} x2"`;
+        if (`${i} x2` == "<%= Weakness %>") {
+          weakness2 += " selected";
+        }
+        weakness2 += `>${i} x2</option>`;
+      }
+      document.getElementById("Weakness").innerHTML = weakness2;
+
+      let resistance2 = "";
+      for (i of pokemonTypes) {
+        resistance2 += `<option value="${i} -30"`;
+        if (`${i} -30` == "<%= Resistance %>") {
+          resistance2 += " selected";
+        }
+        resistance2 += `>${i} -30</option>`;
+      }
+      document.getElementById("Resistance").innerHTML = resistance2;
+
+      const rarity = [
+        "Common",
+        "Uncommon",
+        "Rare",
+        "Ultra-Rare Rare",
+        "Double Rare",
+        "Ultra Rare",
+        "Illustration Rare",
+        "Special Illustration Rare",
+        "Hyper Rare",
+        "Shiny Rare",
+        "Shiny Ultra Rare",
+        "ACE SPEC Rare"
+      ];
+      let rarity2 = "";
+      for (i of rarity) {
+        rarity2 += `<option value="${i}"`;
+        if (i == "<%= Rarity %>") {
+          rarity2 += " selected";
+        }
+        rarity2 += `>${i}</option>`;
+      }
+      document.getElementById("Rarity").innerHTML = rarity2;
+
+      let height = '<%= Height %>'
+      height = parseInt(height)
+      let feet = Math.floor(height / 12)
+      let inch = height - (feet * 12)
+      document.getElementById("HeightFt").value = feet
+      document.getElementById("HeightIn").value = inch
+    };
+  </script>
+</head>
+<body>
+  <div>
+    <form name="details" action="/saveEntry" method="post">
+      <h1>Item Details</h1>
+      <label for="ID">Entry ID: </label>
+      <input
+        type="number"
+        name="ID"
+        id="ID"
+        value="<%= ID %>"
+        style="width: 50px"
+        required
+        readonly
+      />
+      <br />
+      <label for="CardType">Card Type: </label>
+      <select name="CardType" id="CardType"></select>
+      <br />
+      <label for="Name">Name: </label>
+      <input
+        type="text"
+        name="Name"
+        id="value"
+        value="<%= Name %>"
+        style="width: 200px"
+      />
+      <br />
+      <label for="HP">HP: </label>
+      <input
+        type="number"
+        name="HP"
+        id="HP"
+        value="<%= HP %>"
+        style="width: 50px"
+        required
+      />
+      <br />
+      <label for="Type">Type: </label>
+      <select name="Type" id="Type"></select>
+      <br />
+      <label for="Variant">Variant: </label>
+      <select name="Variant" id="Variant"></select>
+      <br />
+      <label for="DexNo">Pokédex Number: </label>
+      <input
+        type="number"
+        name="DexNo"
+        id="DexNo"
+        value="<%= DexNo %>"
+        style="width: 50px"
+      />
+      <br />
+      <label for="Breed">Breed: </label>
+      <input
+        type="text"
+        name="Breed"
+        id="Breed"
+        value="<%= Breed %>"
+        style="width: 150px"
+      />
+      <br />
+      <label for="Height">Height: </label>
+      <input
+        type="number"
+        name="HeightFt"
+        id="HeightFt"
+        style="width: 50px"
+        step="1"
+      /> ft
+      <input
+        type="number"
+        name="HeightIn"
+        id="HeightIn"
+        style="width: 50px"
+        step="1"
+      /> in
+      <br />
+      <label for="Weight">Weight: </label>
+      <input
+        type="number"
+        name="Weight"
+        id="Weight"
+        value="<%= Weight %>"
+        style="width: 100px"
+        step="0.1"
+      />
+      <br />
+      <label for="Weakness">Weakness: </label>
+      <select name="Weakness" id="Weakness"></select>
+      <br />
+      <label for="Resistance">Resistance: </label>
+      <select name="Resistance" id="Resistance"></select>
+      <br />
+      <label for="RetreatCost">Retreat Cost: </label>
+      <input
+        type="number"
+        name="RetreatCost"
+        id="RetreatCost"
+        value="<%= RetreatCost %>"
+        style="width: 50px"
+      />
+      <br />
+      <label for="Description">Description: </label>
+      <textarea
+        type="text"
+        name="Description"
+        id="Description"
+        value="<%= Description %>"
+        style="width: 300px; height: 75px; word-wrap: break-word"
+      ><%= Description %></textarea>
+      <br />
+      <label for="Rarity">Rarity: </label>
+      <select name="Rarity" id="Rarity"></select>
+      <br />
+      <label for="Set">Set: </label>
+      <input
+        type="text"
+        name="Set"
+        id="Set"
+        value="<%= Set %>"
+        style="width: 200px"
+      />
+      <br />
+      <label for="SetNo">Set Number: </label>
+      <input
+        type="number"
+        name="SetNo"
+        id="SetNo"
+        value="<%= SetNo %>"
+        style="width: 50px"
+      />
+      <br />
+      <h2>Attacks</h2>
+      <div id="attacks"></div>
+      <br />
+      <button type="button" onClick="createDropdowns()">Add Attack</button>
+      <br />
+      <br />
+      <input type="submit" value="Save Changes" />
+    </form>
+  </div>
+</body>
