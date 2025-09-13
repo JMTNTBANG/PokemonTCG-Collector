@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename)
 
 import auth from "./routes/auth.ts"
+import webClient from "./routes/webClient.ts";
 
 
 interface PromisifiedGet {
@@ -378,6 +379,7 @@ try {
     });
 
     server.use("/auth", auth)
+    server.use('/web', webClient)
 
     server.listen(port, () => {
         console.log(`Server Ready`)

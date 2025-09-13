@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<style>
+    .center {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .screen {
+        left: 0;
+        top: 0;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+    }
+    .auth {
+        padding: 25px;
+    }
+    .auth * {
+        margin: 5px
+    }
+    body {
+        font-family: "Roboto Light", Helvetica, sans-serif;
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        padding: 10px
+    }
+    th {
+        background-color: lightgray;
+    }
+    td {
+        background-color: darkgray;
+    }
+    th, td {
+        padding: 5px 10px;
+        border: gray solid 3px;
+    }
+</style>
+<script>
+    function authCompleted(data) {
+        const {session, user} = data;
+        localStorage.setItem('session', JSON.stringify(session));
+        localStorage.setItem('user', JSON.stringify(user));
+        if (session.Expiration < Date.now()) { // Temporary Client-Side Session Check for Debugging, Will be server implemented later on.
+            localStorage.removeItem('session');
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+        document.getElementById("auth").style.display = "none";
+        document.getElementById("collection").style.display = "block";
+        let collection_header = document.getElementById("collection_header")
+        collection_header.innerText = collection_header.innerText.replace('{Username}', user.Username)
+    }
+    window.onload = () => {
+        if (localStorage.getItem('session') && localStorage.getItem('user')) {
+            const data = { session: JSON.parse(localStorage.getItem('session')), user: JSON.parse(localStorage.getItem('user')) };
+            authCompleted(data);
+        }
+        document.getElementById("auth_register").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const rUsername = document.getElementById('auth_register_username').value
+            const rPassword = document.getElementById('auth_register_password').value
+            fetch("auth/register", {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify({ "Username": rUsername, "Password": rPassword})
+            }).then((response) => response.json()).then((data) => {
+                console.log(data)
+                if (data.error) {
+                    document.getElementById("auth_register_error_message").innerText = data.error
+                } else {
+                    authCompleted(data)
+                }
+            })
+        })
+        document.getElementById("auth_register").addEventListener("input", (e) => {
+            document.getElementById("auth_register_error_message").innerText = ''
+        })
+        document.getElementById("auth_login").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const lUsername = document.getElementById('auth_login_username').value
+            const lPassword = document.getElementById('auth_login_password').value
+            fetch("auth/login", {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify({ "Username": lUsername, "Password": lPassword})
+            }).then((response) => response.json()).then((data) => {
+                console.log(data)
+                if (data.error) {
+                    document.getElementById("auth_login_error_message").innerText = data.error
+                } else {
+                    authCompleted(data)
+                }
+            })
+        })
+        document.getElementById("auth_login").addEventListener("input", (e) => {
+            document.getElementById("auth_login_error_message").innerText = ''
+        })
+        let r = Math.floor(Math.random() * 64)+192;
+        let g = Math.floor(Math.random() * 64)+192;
+        let b = Math.floor(Math.random() * 64)+192;
+
+        const screens = document.getElementsByClassName("screen")
+
+        for (let i = 0; i < screens.length; i++) {
+            screens[i].style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        }
+
+        const auth = document.getElementsByClassName("auth");
+
+        for (let i = 0; i < auth.length; i++) {
+            auth[i].style.backgroundColor = `rgb(${r-64}, ${g-64}, ${b-64})`;
+        }
+
+    }
+</script>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>PokémonTCG Collector</title>
+    </head>
+    <div id="auth" class="screen">
+        <div class="center">
+            <form id="auth_login" class="auth">
+                <span style="font-size: 1.5em; font-weight: bold;">Login</span>
+                <br>
+                <span id="auth_login_error_message" style="color: red"></span>
+                <br>
+                <label for="auth_login_username">Username</label>
+                <input id="auth_login_username" type="text" name="username" placeholder="Username" required>
+                <br>
+                <label for="auth_login_password">Password</label>
+                <input id="auth_login_password" type="password" name="password" placeholder="Password" required>
+                <br>
+                <input type="submit" value="Login">
+                <button type="button" onclick="document.getElementById('auth_login').style.display = 'none'; document.getElementById('auth_register').style.display = 'block'">Or Register</button>
+            </form>
+            <form id="auth_register" class="auth" style="display: none;">
+                <span style="font-size: 1.5em; font-weight: bold;">Register</span>
+                <br>
+                <span id="auth_register_error_message" style="color: red"></span>
+                <br>
+                <label for="auth_register_username">Username</label>
+                <input id="auth_register_username" type="text" name="username" placeholder="Username" required>
+                <br>
+                <label for="auth_register_password">Password</label>
+                <input id="auth_register_password" type="password" name="password" placeholder="Password" required>
+                <br>
+                <input type="submit" value="Register">
+                <button type="button" onclick="document.getElementById('auth_register').style.display = 'none'; document.getElementById('auth_login').style.display = 'block'">Or Login</button>
+            </form>
+        </div>
+    </div>
+    <div id="collection" class="screen" style="display: none;">
+        <br>
+        <span id="collection_header" style="font-size: 2em; font-weight: bold; margin: 25px">Viewing {Username}'s Collection</span>
+        <br>
+        <br>
+        <table>
+            <tr>
+                <th style="visibility: hidden; border: none"></th>
+                <th style="visibility: hidden; border: none"></th>
+            </tr>
+        </table>
+    </div>
+</html>
