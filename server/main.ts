@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename)
 
 import auth from "./routes/auth.ts"
+import cards from "./routes/cards.ts";
 import webClient from "./routes/webClient.ts";
 
 
@@ -360,7 +361,7 @@ if (!initialized) {
         await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Adjustments')")
         await runAsync("CREATE TABLE Users ( UserID INT PRIMARY KEY, Username VARCHAR(255), Password VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
         await runAsync("CREATE TABLE Sessions ( SessionID INT PRIMARY KEY, UserID INT, UUID VARCHAR(255), Expiration DATETIME, DateCreated DATETIME DEFAULT current_timestamp )")
-        await runAsync("CREATE TABLE Cards ( CardID INT PRIMARY KEY, UserID INT, CardType VARCHAR(255), Name VARCHAR(255), Parent JSON, HP INT, Type VARCHAR(255), DexNo INT, Breed VARCHAR(255), Height VARCHAR(255), Weight VARCHAR(255), Ability JSON, Attacks JSON, Weakness VARCHAR(255), Resistance VARCHAR(255), RetreatCost INT, 'Set' VARCHAR(255), SetNumber INT, Rarity VARCHAR(255), Print VARCHAR(255), Lore VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
+        await runAsync("CREATE TABLE Cards ( CardID INT PRIMARY KEY, UserID INT, CardType VARCHAR(255), Name VARCHAR(255), Parent JSON, HP INT, Type VARCHAR(255), DexNo INT, Breed VARCHAR(255), Height INT, Weight FLOAT, Ability JSON, Attacks JSON, Weakness VARCHAR(255), Resistance VARCHAR(255), RetreatCost INT, 'Set' VARCHAR(255), SetNumber INT, Rarity VARCHAR(255), Print VARCHAR(255), Lore VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
         await runAsync("CREATE TABLE Adjustments ( AdjustmentID INT PRIMARY KEY, CardID INT, UserID INT, Amount INT, ReasonCode VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
     } catch (error) {
         console.error('Error Initializing Database:', error);
@@ -379,6 +380,7 @@ try {
     });
 
     server.use("/auth", auth)
+    server.use('/cards', cards)
     server.use('/web', webClient)
 
     server.listen(port, () => {

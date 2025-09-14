@@ -43,15 +43,44 @@
         const {session, user} = data;
         localStorage.setItem('session', JSON.stringify(session));
         localStorage.setItem('user', JSON.stringify(user));
-        if (session.Expiration < Date.now()) { // Temporary Client-Side Session Check for Debugging, Will be server implemented later on.
-            localStorage.removeItem('session');
-            localStorage.removeItem('user');
-            window.location.reload();
-        }
         document.getElementById("auth").style.display = "none";
         document.getElementById("collection").style.display = "block";
         let collection_header = document.getElementById("collection_header")
         collection_header.innerText = collection_header.innerText.replace('{Username}', user.Username)
+        let collection_table = document.getElementById("collection_table")
+        fetch("cards/retrieve", {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify({session: session, user: user})
+        }).then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                if (data.status === 401) {
+                    localStorage.removeItem('session');
+                    localStorage.removeItem('user');
+                    window.location.reload();
+                    return;
+                }
+            }
+            if (!data.cards) return;
+            if (data.cards.length === 0) return;
+            for (let card of data.cards) {
+                collection_table.innerHTML +=
+                    `<tr>
+                        <td style="visibility: hidden; border: none"></td>
+                        <td>${card.CardType}</td>
+                        <td>${card.Name}</td>
+                        <td>${card.Type}</td>
+                        <td>${card.Breed}</td>
+                        <td>${card.Set}</td>
+                        <td>${card.SetNumber}</td>
+                        <td>${card.Print}</td>
+                        <td style="visibility: hidden; border: none"></td>
+                    </tr>`
+            }
+        })
     }
     window.onload = () => {
         if (localStorage.getItem('session') && localStorage.getItem('user')) {
@@ -162,9 +191,16 @@
         <span id="collection_header" style="font-size: 2em; font-weight: bold; margin: 25px">Viewing {Username}'s Collection</span>
         <br>
         <br>
-        <table>
+        <table id="collection_table">
             <tr>
                 <th style="visibility: hidden; border: none"></th>
+                <th>Card Type</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Breed</th>
+                <th>Set</th>
+                <th>Set Number</th>
+                <th>Print</th>
                 <th style="visibility: hidden; border: none"></th>
             </tr>
         </table>
