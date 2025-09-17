@@ -180,7 +180,7 @@ interface CardData {
     UserID: number;
     CardType: CardType;
     Name: string;
-    Parent: Card | null;
+    Parent: number | null;
     HP: number | null;
     Type: Type;
     DexNo: number | null;
@@ -204,7 +204,7 @@ export class Card implements CardData {
     UserID: number;
     CardType: CardType;
     Name: string;
-    Parent: Card | null;
+    Parent: number | null;
     HP: number | null;
     Type: Type;
     DexNo: number | null;
@@ -229,15 +229,15 @@ export class Card implements CardData {
             'UserID' in dbOutput && typeof (dbOutput as any).UserID === 'number' &&
             'CardType' in dbOutput && typeof (dbOutput as any).CardType === 'string' &&
             'Name' in dbOutput && typeof (dbOutput as any).Name === 'string' &&
-            'Parent' in dbOutput && (typeof (dbOutput as any).Parent === 'object' || (dbOutput as any).Parent === null) &&
+            'Parent' in dbOutput && (typeof (dbOutput as any).Parent === 'number' || (dbOutput as any).Parent === null) &&
             'HP' in dbOutput && (typeof (dbOutput as any).HP === 'number' || (dbOutput as any).HP === null) &&
             'Type' in dbOutput && typeof (dbOutput as any).Type === 'string' &&
             'DexNo' in dbOutput && (typeof (dbOutput as any).DexNo === 'number' || (dbOutput as any).DexNo === null) &&
             'Breed' in dbOutput && (typeof (dbOutput as any).Breed === 'string' || (dbOutput as any).Breed === null) &&
             'Height' in dbOutput && (typeof (dbOutput as any).Height === 'number' || (dbOutput as any).Height === null) &&
             'Weight' in dbOutput && (typeof (dbOutput as any).Weight === 'number' || (dbOutput as any).Weight === null) &&
-            'Ability' in dbOutput && (typeof (dbOutput as any).Ability === 'object' || (dbOutput as any).Ability === null) &&
-            'Attacks' in dbOutput && (Array.isArray((dbOutput as any).Attacks) || (dbOutput as any).Attacks === null) &&
+            'Ability' in dbOutput && (typeof (dbOutput as any).Ability === 'string' || (dbOutput as any).Ability === null) &&
+            'Attacks' in dbOutput && (typeof (dbOutput as any).Attacks === 'string' || (dbOutput as any).Attacks === null) &&
             'Weakness' in dbOutput && (typeof (dbOutput as any).Weakness === 'string' || (dbOutput as any).Weakness === null) &&
             'Resistance' in dbOutput && (typeof (dbOutput as any).Resistance === 'string' || (dbOutput as any).Resistance === null) &&
             'RetreatCost' in dbOutput && (typeof (dbOutput as any).RetreatCost === 'number' || (dbOutput as any).RetreatCost === null) &&
@@ -261,8 +261,10 @@ export class Card implements CardData {
             this.Breed = cardData.Breed;
             this.Height = cardData.Height;
             this.Weight = cardData.Weight;
-            this.Ability = cardData.Ability;
-            this.Attacks = cardData.Attacks;
+            // @ts-ignore
+            this.Ability = JSON.parse(cardData.Ability)
+            // @ts-ignore
+            this.Attacks = JSON.parse(cardData.Attacks);
             this.Weakness = cardData.Weakness;
             this.Resistance = cardData.Resistance;
             this.RetreatCost = cardData.RetreatCost;
@@ -288,7 +290,7 @@ export async function createCard(user: User, cardData: CardData): Promise<Card> 
     let id: number;
     if (typeof(idLocation.Location) === "number") id = idLocation.Location; else throw Error("Not a Card");
     await getAsync('UPDATE IDLocation SET Location = ? WHERE "Table" = ?', [id + 1, "Cards"])
-    return new Card(await getAsync('INSERT INTO Cards (CardID, UserID, CardType, Name, Parent, HP, Type, DexNo, Breed, Height, Weight, Ability, Attacks, Weakness, Resistance, RetreatCost, Set, SetNumber, Rarity, Print, Lore) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING *', [id, user.UserID, cardData.CardType, cardData.Name, JSON.stringify(cardData.Parent), cardData.HP, cardData.Type, cardData.DexNo, cardData.Breed, cardData.Height, cardData.Weight, JSON.stringify(cardData.Ability), JSON.stringify(cardData.Attacks), cardData.Weakness, cardData.Resistance, cardData.RetreatCost, cardData.Set, cardData.SetNumber, cardData.Rarity, cardData.Print, cardData.Lore]))
+    return new Card(await getAsync('INSERT INTO Cards (CardID, UserID, CardType, Name, Parent, HP, Type, DexNo, Breed, Height, Weight, Ability, Attacks, Weakness, Resistance, RetreatCost, "Set", SetNumber, Rarity, Print, Lore) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING *', [id, user.UserID, cardData.CardType, cardData.Name, JSON.stringify(cardData.Parent), cardData.HP, cardData.Type, cardData.DexNo, cardData.Breed, cardData.Height, cardData.Weight, JSON.stringify(cardData.Ability), JSON.stringify(cardData.Attacks), cardData.Weakness, cardData.Resistance, cardData.RetreatCost, cardData.Set, cardData.SetNumber, cardData.Rarity, cardData.Print, cardData.Lore]))
 }
 
 type AdjustmentReason = "Received" | "Sold" | "Donation" | "Lost"
@@ -361,7 +363,7 @@ if (!initialized) {
         await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Adjustments')")
         await runAsync("CREATE TABLE Users ( UserID INT PRIMARY KEY, Username VARCHAR(255), Password VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
         await runAsync("CREATE TABLE Sessions ( SessionID INT PRIMARY KEY, UserID INT, UUID VARCHAR(255), Expiration DATETIME, DateCreated DATETIME DEFAULT current_timestamp )")
-        await runAsync("CREATE TABLE Cards ( CardID INT PRIMARY KEY, UserID INT, CardType VARCHAR(255), Name VARCHAR(255), Parent JSON, HP INT, Type VARCHAR(255), DexNo INT, Breed VARCHAR(255), Height INT, Weight FLOAT, Ability JSON, Attacks JSON, Weakness VARCHAR(255), Resistance VARCHAR(255), RetreatCost INT, 'Set' VARCHAR(255), SetNumber INT, Rarity VARCHAR(255), Print VARCHAR(255), Lore VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
+        await runAsync("CREATE TABLE Cards ( CardID INT PRIMARY KEY, UserID INT, CardType VARCHAR(255), Name VARCHAR(255), Parent INT, HP INT, Type VARCHAR(255), DexNo INT, Breed VARCHAR(255), Height INT, Weight FLOAT, Ability JSON, Attacks JSON, Weakness VARCHAR(255), Resistance VARCHAR(255), RetreatCost INT, 'Set' VARCHAR(255), SetNumber INT, Rarity VARCHAR(255), Print VARCHAR(255), Lore VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
         await runAsync("CREATE TABLE Adjustments ( AdjustmentID INT PRIMARY KEY, CardID INT, UserID INT, Amount INT, ReasonCode VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
     } catch (error) {
         console.error('Error Initializing Database:', error);

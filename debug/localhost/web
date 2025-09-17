@@ -835,7 +835,7 @@
                     createWindow.document.getElementById("ability_name").value = jsonFormat.Name
                     createWindow.document.getElementById("ability_description").value = jsonFormat.Description
                 } catch (error) {
-
+                    
                 }
                 createWindow.document.getElementById("ability_screen").style.display = "block";
             })
