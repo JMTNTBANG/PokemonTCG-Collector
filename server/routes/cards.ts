@@ -1,6 +1,6 @@
 import express from 'express';
 import {verifySession} from "../util.js";
-import {allAsync, Card, createCard, runAsync} from "../main.js";
+import {allAsync, Card, createCard, getAsync, runAsync} from "../main.js";
 
 const router: express.Router = express.Router();
 
@@ -32,7 +32,44 @@ router.put("/create", async (req, res) => {
 })
 
 router.put("/update", async (req, res) => {
-
+    const sessionVerified = await verifySession(req, res)
+    if (!sessionVerified) return;
+    const {session, user} = sessionVerified;
+    const cardData = req.body.CardData;
+    cardData.UserID = user.UserID;
+    const card = new Card(await getAsync(`
+        UPDATE Cards SET
+             CardID = ?, UserID = ?, CardType = ?, Name = ?, Parent = ?,
+             HP = ?, Type = ?, DexNo = ?, Breed = ?, Height = ?,
+             Weight = ?, Ability = ?, Attacks = ?, Weakness = ?,
+             Resistance = ?, RetreatCost = ?, "Set" = ?, SetNumber = ?,
+             Rarity = ?, Print = ?, Lore = ?
+        WHERE CardID = ? RETURNING *;
+    `, [
+        cardData.CardID,
+        cardData.UserID,
+        cardData.CardType,
+        cardData.Name,
+        cardData.Parent,
+        cardData.HP,
+        cardData.Type,
+        cardData.DexNo,
+        cardData.Breed,
+        cardData.Height,
+        cardData.Weight,
+        JSON.stringify(cardData.Ability),
+        JSON.stringify(cardData.Attacks),
+        cardData.Weakness,
+        cardData.Resistance,
+        cardData.RetreatCost,
+        cardData.Set,
+        cardData.SetNumber,
+        cardData.Rarity,
+        cardData.Print,
+        cardData.Lore,
+        cardData.CardID
+    ]))
+    res.status(200).send({card: card});
 })
 
 router.delete("/delete", async (req, res) => {
