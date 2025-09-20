@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 80
 
-CMD ["node", "src/index.js"]
+CMD ["tsx", "server/main.ts"]

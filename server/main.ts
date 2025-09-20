@@ -355,6 +355,7 @@ export async function createAdjustment(user: User, adjustmentData: AdjustmentDat
 const server: express.Application = express();
 const port: number = 80;
 const endpoint: string = "/"
+if (!fs.existsSync('server/config')) fs.mkdirSync('server/config')
 const initialized: boolean = fs.existsSync('server/config/database.db')
 
 export const db: sqlite3.Database = new sqlite3.Database("server/config/database.db");
