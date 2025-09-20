@@ -339,7 +339,7 @@
                 </table>
                 <br>
                 <br>
-                <center><button id="card_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button><button style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Delete</button></center>
+                <center><button id="card_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button><button id="card_delete" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Delete</button></center>
             </div>
             <div id="ability_screen" class="screen" style="display: none;">
                 <br>
@@ -741,8 +741,10 @@
                     localStorage.removeItem('session');
                     localStorage.removeItem('user');
                     window.location.reload();
-                    return;
+                } else if (data.status === 500) {
+                    alert("Internal Server Error, Please Try Again Later.")
                 }
+                return;
             }
             if (!data.cards) return;
             if (data.cards.length === 0) return;
@@ -907,7 +909,47 @@
                             body: JSON.stringify({session: credentials.session, user: credentials.user, CardData: JSONFormat})
                         }).then(res => res.json())
                             .then(data => {
+                                if (data.error) {
+                                    if (data.status === 401) {
+                                        localStorage.removeItem('session');
+                                        localStorage.removeItem('user');
+                                        window.location.reload();
+                                    } else if (data.status === 400 || data.status === 422) {
+                                        detailsWindow.alert("Invalid Data, Please fix any empty boxes.")
+                                    } else if (data.status === 500) {
+                                        detailsWindow.alert("Internal Server Error, Please Try Again Later.")
+                                    }
+                                    return;
+                                }
                                 detailsWindow.close()
+                                window.location.reload();
+                            })
+                    })
+                    detailElement("card_delete").addEventListener("click", (e) => {
+                        if (!detailsWindow.confirm("Are you sure you want to Delete this Card?")) return;
+                        const credentials = { session: JSON.parse(localStorage.getItem('session')), user: JSON.parse(localStorage.getItem('user')) };
+                        fetch("cards/delete", {
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            method: "DELETE",
+                            body: JSON.stringify({session: credentials.session, user: credentials.user, CardID: card.CardID})
+                        }).then(res => res.json())
+                            .then(data => {
+                                if (data.error) {
+                                    if (data.status === 401) {
+                                        localStorage.removeItem('session');
+                                        localStorage.removeItem('user');
+                                        window.location.reload();
+                                    } else if (data.status === 400) {
+                                        detailsWindow.alert("Card Does not Exist")
+                                    }  else if (data.status === 500) {
+                                        detailsWindow.alert("Internal Server Error, Please Try Again Later.")
+                                    }
+                                    return;
+                                }
+                                detailsWindow.close()
+                                window.location.reload();
                             })
                     })
                 })
@@ -1092,7 +1134,21 @@
                     body: JSON.stringify({session: credentials.session, user: credentials.user, CardData: JSONFormat})
                 }).then(res => res.json())
                     .then(data => {
+                        if (data.error) {
+                            if (data.status === 401) {
+                                localStorage.removeItem('session');
+                                localStorage.removeItem('user');
+                                window.location.reload();
+                            } else if (data.status === 400 || data.status === 422) {
+                                detailsWindow.alert("Invalid Data, Please fix any empty boxes.")
+                            }
+                            else if (data.status === 500) {
+                                detailsWindow.alert("Internal Server Error, Please Try Again Later.")
+                            }
+                            return;
+                        }
                         detailsWindow.close()
+                        window.location.reload();
                     })
             })
         })
