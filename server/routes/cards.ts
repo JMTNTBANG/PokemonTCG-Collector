@@ -10,12 +10,27 @@ router.post("/retrieve", async (req, res) => {
     const {session, user} = sessionVerified;
     try {
         let cards = await allAsync('SELECT * FROM Cards WHERE UserID = ?', [user.UserID]);
+        let adjustments = await allAsync('SELECT * FROM Adjustments WHERE UserID = ?', [user.UserID]);
+        let adjProcessing: { [key: number]: number } = {}
+        for (let qty of adjustments) {
+            if (!adjProcessing[qty.CardID]) {
+                adjProcessing[qty.CardID] = 0
+            }
+            adjProcessing[qty.CardID] += qty.Amount
+        }
         for (let i = 0; i < cards.length; i++) {
+            if (adjProcessing[cards[i].CardID]) {
+                cards[i].Qty = adjProcessing[cards[i].CardID];
+            } else {
+                cards[i].Qty = 0
+            }
             cards[i] = new Card(cards[i])
         }
         res.status(200).send({cards: cards});
     } catch (error) {
-        res.status(500).send({status: 500, error: error});
+        if (error instanceof Error) {
+            res.status(500).send({status: 500, error: error.message});
+        }
     }
 })
 
@@ -69,7 +84,9 @@ router.delete("/delete", async (req, res) => {
         await runAsync(`DELETE FROM Cards WHERE CardID = ${cardID}`);
         res.status(200).send({message: "Success"})
     } catch (error) {
-        res.status(500).send({status: 500, error: error});
+        if (error instanceof Error) {
+            res.status(500).send({status: 500, error: error.message});
+        }
     }
 })
 

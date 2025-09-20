@@ -719,6 +719,93 @@
             </div>
         </body>
         `
+    const adjustHTML = `
+    <head>
+        <title>
+            Create Card - PokémonTCG Collector
+        </title>
+        <style>
+            body {
+                font-family: "Roboto Light", Helvetica, sans-serif;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                padding: 10px
+            }
+            th {
+                background-color: lightgray;
+            }
+            td {
+                background-color: darkgray;
+            }
+            th, td {
+                padding: 5px 10px;
+                border: gray solid 3px;
+            }
+            select, input, textarea {
+                height: 100%;
+                width: 100%;
+                border: none;
+                font-size: 1em;
+                background-color: darkgray;
+            }
+            textarea {
+                height: 85px;
+                resize: vertical;
+                font-family: "Roboto Light", Helvetica, sans-serif;
+            }
+            option {
+                background-color: lightgray;
+            }
+            input[type=number]::-webkit-inner-spin-button,
+            input[type=number]::-webkit-outer-spin-button {
+               opacity: 1;
+            }
+            .editButton {
+                border: none;
+                font-size: 1em;
+                background-color: darkgray;
+                width: 30px;
+                float: right;
+            }
+        </style>
+    </head>
+    <body>
+        <br>
+        <span style="font-size: 2.5em; font-weight: bold; margin: 25px">Adjust Item</span>
+        <br>
+        <br>
+        <span id="selectedItem" style="font-size: 1.5em; margin: 25px">{SelectedItem}</span>
+        <br>
+        <br>
+        <table>
+            <tr>
+                <th>
+                    Amount
+                </th>
+                <td>
+                    <input type="number" id="adjustment_amount" name="adjustment_amount">
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Reason
+                </th>
+                <td>
+                    <select id="adjustment_reason" name="adjustment_reason">
+                        <option value="Received">Received</option>
+                        <option value="Sold">Sold</option>
+                        <option value="Lost">Lost</option>
+                        <option value="Donation">Donation</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <br>
+        <center><button id="adjustment_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button></center>
+    </body>`
     function authCompleted(data) {
         const {session, user} = data;
         localStorage.setItem('session', JSON.stringify(session));
@@ -761,6 +848,14 @@
                 editButton.className = "editButton";
                 editButton.innerHTML = "&#9998;";
                 editCell.appendChild(editButton);
+                const inventoryCell = newRow.insertCell();
+                inventoryCell.style.width = "20px";
+                const inventoryCount = document.createElement("a");
+                inventoryCount.href = '#'
+                inventoryCount.innerText = card.Qty;
+                inventoryCount.style.textDecoration = "none";
+                inventoryCount.style.color = "black";
+                inventoryCell.appendChild(inventoryCount);
 
                 newRow.insertCell().textContent = card.CardType;
                 newRow.insertCell().textContent = card.Name;
@@ -778,7 +873,6 @@
                         window.location.reload();
                     })
                     const detailElement = (id) => detailsWindow.document.getElementById(id)
-                    let attackAmt = 1
                     detailsWindow.document.body.style.backgroundColor = window.getComputedStyle(document.getElementById("collection")).backgroundColor;
                     detailsWindow.document.body.innerHTML = detailsHTML
                     const card_parent_drop = detailElement("card_parent")
@@ -949,6 +1043,49 @@
                                     return;
                                 }
                                 detailsWindow.close()
+                                window.location.reload();
+                            })
+                    })
+                })
+                inventoryCount.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const adjustWindow = open("", "AdjustCard", "popup,width=600,height=350");
+                    adjustWindow.addEventListener("unload", () => {
+                        window.location.reload();
+                    })
+                    const adjustElement = (id) => adjustWindow.document.getElementById(id)
+                    adjustWindow.document.body.style.backgroundColor = window.getComputedStyle(document.getElementById("collection")).backgroundColor;
+                    adjustWindow.document.body.innerHTML = adjustHTML
+                    adjustElement("selectedItem").innerText = adjustElement("selectedItem").innerText.replace('{SelectedItem}', `${card.Name} - ${card.Set}`)
+                    adjustElement("adjustment_save").addEventListener("click", (e) => {
+                        let JSONFormat = {
+                            CardID: card.CardID,
+                            UserID: -1,
+                            Amount: adjustElement("adjustment_amount").value,
+                            ReasonCode: adjustElement("adjustment_reason").value
+                        }
+                        const credentials = { session: JSON.parse(localStorage.getItem('session')), user: JSON.parse(localStorage.getItem('user')) };
+                        fetch("adjustments/create", {
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            method: "PUT",
+                            body: JSON.stringify({session: credentials.session, user: credentials.user, AdjustData: JSONFormat})
+                        }).then(res => res.json())
+                            .then(data => {
+                                if (data.error) {
+                                    if (data.status === 401) {
+                                        localStorage.removeItem('session');
+                                        localStorage.removeItem('user');
+                                        window.location.reload();
+                                    } else if (data.status === 400 || data.status === 422) {
+                                        adjustWindow.alert("Invalid Data, Please fix any empty boxes.")
+                                    } else if (data.status === 500) {
+                                        adjustWindow.alert("Internal Server Error, Please Try Again Later.")
+                                    }
+                                    return;
+                                }
+                                adjustWindow.close()
                                 window.location.reload();
                             })
                     })
@@ -1203,6 +1340,7 @@
             <tr>
                 <th style="visibility: hidden; border: none"></th>
                 <th></th>
+                <th>Qty</th>
                 <th>Card Type</th>
                 <th>Name</th>
                 <th>Type</th>

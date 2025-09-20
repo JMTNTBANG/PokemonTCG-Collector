@@ -8,6 +8,7 @@ const __dirname = dirname(__filename)
 
 import auth from "./routes/auth.ts"
 import cards from "./routes/cards.ts";
+import adjustments from "./routes/adjustments.js";
 import webClient from "./routes/webClient.ts";
 
 
@@ -178,6 +179,7 @@ type Print = "Normal" | "Reverse Holo" | "Rare Holo"
 interface CardData {
     CardID: number;
     UserID: number;
+    Qty: number;
     CardType: CardType;
     Name: string;
     Parent: number | null;
@@ -202,6 +204,7 @@ interface CardData {
 export class Card implements CardData {
     CardID: number;
     UserID: number;
+    Qty: number;
     CardType: CardType;
     Name: string;
     Parent: number | null;
@@ -227,6 +230,7 @@ export class Card implements CardData {
             typeof dbOutput === 'object' && dbOutput !== null &&
             'CardID' in dbOutput && typeof (dbOutput as any).CardID === 'number' &&
             'UserID' in dbOutput && typeof (dbOutput as any).UserID === 'number' &&
+            'Qty' in dbOutput && typeof (dbOutput as any).Qty === 'number' &&
             'CardType' in dbOutput && typeof (dbOutput as any).CardType === 'string' &&
             'Name' in dbOutput && typeof (dbOutput as any).Name === 'string' &&
             'Parent' in dbOutput && (typeof (dbOutput as any).Parent === 'number' || (dbOutput as any).Parent === null) &&
@@ -252,6 +256,7 @@ export class Card implements CardData {
 
             this.CardID = cardData.CardID;
             this.UserID = cardData.UserID;
+            this.Qty = cardData.Qty;
             this.CardType = cardData.CardType;
             this.Name = cardData.Name;
             this.Parent = cardData.Parent;
@@ -339,12 +344,12 @@ export class Adjustment implements AdjustmentData {
         }
     }
 }
-export async function createAdjustment(user: User, card: Card, adjustmentData: AdjustmentData): Promise<Adjustment> {
+export async function createAdjustment(user: User, adjustmentData: AdjustmentData): Promise<Adjustment> {
     const idLocation = await getAsync('SELECT * FROM IDLocation WHERE "Table" = ?', ["Adjustments"]);
     let id: number;
     if (typeof(idLocation.Location) === "number") id = idLocation.Location; else throw Error("Not an Adjustment");
     await getAsync('UPDATE IDLocation SET Location = ? WHERE "Table" = ?', [id + 1, "Adjustments"])
-    return new Adjustment(await getAsync('INSERT INTO Adjustments (AdjustmentID, CardID, UserID, Amount, ReasonCode) VALUES (?,?,?,?,?) RETURNING *', [id, card.CardID, user.UserID, adjustmentData.Amount, adjustmentData.ReasonCode]))
+    return new Adjustment(await getAsync('INSERT INTO Adjustments (AdjustmentID, CardID, UserID, Amount, ReasonCode) VALUES (?,?,?,?,?) RETURNING *', [id, adjustmentData.CardID, user.UserID, adjustmentData.Amount, adjustmentData.ReasonCode]))
 }
 
 const server: express.Application = express();
@@ -383,6 +388,7 @@ try {
 
     server.use("/auth", auth)
     server.use('/cards', cards)
+    server.use('/adjustments', adjustments)
     server.use('/web', webClient)
 
     server.listen(port, () => {
