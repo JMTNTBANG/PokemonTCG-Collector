@@ -1,6 +1,6 @@
 {
   "name": "pokemontcg-collector",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Log your Video Game Collection with this MySQL Integrated Web Interface",
   "type": "module",
   "main": "src/index.js",
@@ -32,6 +32,6 @@
     "@types/node": "^24.3.1",
     "@types/sqlite3": "^3.1.11",
     "jsx-runtime": "^1.2.0",
-    "ts-node": "^10.9.2",
+    "ts-node": "^10.9.2"
   }
 }
