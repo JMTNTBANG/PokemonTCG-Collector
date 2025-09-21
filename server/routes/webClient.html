@@ -876,8 +876,10 @@
                     detailsWindow.document.body.style.backgroundColor = window.getComputedStyle(document.getElementById("collection")).backgroundColor;
                     detailsWindow.document.body.innerHTML = detailsHTML
                     const card_parent_drop = detailElement("card_parent")
-                    for (let card of JSON.parse(localStorage.getItem("cards"))) {
-                        card_parent_drop.innerHTML += `<option value="${card.CardID}">${card.Name} - ${card.Set}</option>`
+                    if (localStorage.getItem("cards")) {
+                        for (let card of JSON.parse(localStorage.getItem("cards"))) {
+                            card_parent_drop.innerHTML += `<option value="${card.CardID}">${card.Name} - ${card.Set}</option>`
+                        }
                     }
                     const heightft = Math.floor(card.Height/12)
                     const heightin = card.Height % 12
@@ -966,10 +968,13 @@
                     })
                     detailElement("card_save").addEventListener("click", (e) => {
                         const height = parseInt(detailElement("card_height_ft").value)*12+parseInt(detailElement("card_height_in").value)
+                        if (detailElement("card_ability").value === "") detailElement("card_ability").value = "{\"Name\":\"\",\"Description\":\"\"}"
+                        if (detailElement("card_attacks").value === "") detailElement("card_attacks").value = "[{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"}]"
                         let JSONFormat = {
                             CardID: card.CardID,
                             UserID: -1,
                             CardType: detailElement("card_card_type").value,
+                            Qty: -1,
                             Name: detailElement("card_name").value,
                             Parent: parseInt(detailElement("card_parent").value),
                             HP: parseInt(detailElement("card_hp").value),
@@ -1167,8 +1172,10 @@
             detailsWindow.document.body.style.backgroundColor = window.getComputedStyle(document.getElementById("collection")).backgroundColor;
             detailsWindow.document.body.innerHTML = detailsHTML
             const card_parent_drop = detailElement("card_parent")
-            for (let card of JSON.parse(localStorage.getItem("cards"))) {
-                card_parent_drop.innerHTML += `<option value="${card.CardID}">${card.Name} - ${card.Set}</option>`
+            if (localStorage.getItem("cards")) {
+                for (let card of JSON.parse(localStorage.getItem("cards"))) {
+                    card_parent_drop.innerHTML += `<option value="${card.CardID}">${card.Name} - ${card.Set}</option>`
+                }
             }
             detailElement("card_ability_edit").addEventListener("click", (e) => {
                 detailElement("details_screen").style.display = "none";
@@ -1234,10 +1241,13 @@
             })
             detailElement("card_save").addEventListener("click", (e) => {
                 const height = parseInt(detailElement("card_height_ft").value)*12+parseInt(detailElement("card_height_in").value)
+                if (detailElement("card_ability").value === "") detailElement("card_ability").value = "{\"Name\":\"\",\"Description\":\"\"}"
+                if (detailElement("card_attacks").value === "") detailElement("card_attacks").value = "[{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"}]"
                 let JSONFormat = {
                     CardID: -1,
                     UserID: -1,
                     CardType: detailElement("card_card_type").value,
+                    Qty: -1,
                     Name: detailElement("card_name").value,
                     Parent: parseInt(detailElement("card_parent").value),
                     HP: parseInt(detailElement("card_hp").value),
