@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<link rel="shortcut icon" href="web/favicon"/>
+<link rel="stylesheet" href="web/styles">
+<script src="web/script"></script>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>PokémonTCG Collector</title>
+    </head>
+    <div id="auth" class="screen">
+        <div class="center">
+            <form id="auth_login" class="auth">
+                <span style="font-size: 1.5em; font-weight: bold;">Login</span>
+                <br>
+                <span id="auth_login_error_message" style="color: red"></span>
+                <br>
+                <label for="auth_login_username">Username</label>
+                <input id="auth_login_username" type="text" name="username" placeholder="Username" required>
+                <br>
+                <label for="auth_login_password">Password</label>
+                <input id="auth_login_password" type="password" name="password" placeholder="Password" required>
+                <br>
+                <input type="submit" value="Login">
+                <button type="button" onclick="document.getElementById('auth_login').style.display = 'none'; document.getElementById('auth_register').style.display = 'block'">Or Register</button>
+            </form>
+            <form id="auth_register" class="auth" style="display: none;">
+                <span style="font-size: 1.5em; font-weight: bold;">Register</span>
+                <br>
+                <span id="auth_register_error_message" style="color: red"></span>
+                <br>
+                <label for="auth_register_username">Username</label>
+                <input id="auth_register_username" type="text" name="username" placeholder="Username" required>
+                <br>
+                <label for="auth_register_password">Password</label>
+                <input id="auth_register_password" type="password" name="password" placeholder="Password" required>
+                <br>
+                <input type="submit" value="Register">
+                <button type="button" onclick="document.getElementById('auth_register').style.display = 'none'; document.getElementById('auth_login').style.display = 'block'">Or Login</button>
+            </form>
+        </div>
+    </div>
+    <div id="collection" class="screen" style="display: none;">
+        <br>
+        <span id="collection_header" style="font-size: 2.5em; font-weight: bold; margin: 25px">Viewing {Username}'s Collection</span>
+        <button id="collection_logout_button" style="height: 50px; width: 125px; font-size: 1.5em; float: right; margin: 0 20px 15px 0">Log Out</button>
+        <button id="collection_create_button" style="height: 50px; width: 175px; font-size: 1.5em; float: right; margin: 0 20px 15px 0">Create Card</button>
+        <br>
+        <br>
+        <table id="collection_table">
+            <tr>
+                <th style="visibility: hidden; border: none"></th>
+                <th></th>
+                <th>Qty</th>
+                <th>Card Type</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Breed</th>
+                <th>Set</th>
+                <th>Set Number</th>
+                <th>Print</th>
+                <th style="visibility: hidden; border: none"></th>
+            </tr>
+        </table>
+    </div>
+</html>

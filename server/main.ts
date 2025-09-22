@@ -9,7 +9,7 @@ const __dirname = dirname(__filename)
 import auth from "./routes/auth.ts"
 import cards from "./routes/cards.ts";
 import adjustments from "./routes/adjustments.js";
-import webClient from "./routes/webClient.ts";
+import webClient from "./routes/web.ts";
 
 
 interface PromisifiedGet {

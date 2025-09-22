@@ -1,52 +1,5 @@
-<!DOCTYPE html>
-<style>
-    .center {
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .screen {
-        left: 0;
-        top: 0;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-    }
-    .auth {
-        padding: 25px;
-    }
-    .auth * {
-        margin: 5px
-    }
-    .editButton {
-        border: none;
-        font-size: 1em;
-        background-color: darkgray;
-        width: 30px;
-        float: right;
-    }
-    body {
-        font-family: "Roboto Light", Helvetica, sans-serif;
-    }
-    table {
-        border-collapse: collapse;
-        width: 100%;
-        padding: 10px
-    }
-    th {
-        background-color: lightgray;
-    }
-    td {
-        background-color: darkgray;
-    }
-    th, td {
-        padding: 5px 10px;
-        border: gray solid 3px;
-    }
-</style>
-<script>
-    const detailsHTML = `
+// Dialog Pages
+const detailsHTML = `
         <head>
             <title>
                 Create Card - PokémonTCG Collector
@@ -719,7 +672,7 @@
             </div>
         </body>
         `
-    const adjustHTML = `
+const adjustHTML = `
     <head>
         <title>
             Create Card - PokémonTCG Collector
@@ -806,22 +759,24 @@
         <br>
         <center><button id="adjustment_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button></center>
     </body>`
-    function authCompleted(data) {
-        const {session, user} = data;
-        localStorage.setItem('session', JSON.stringify(session));
-        localStorage.setItem('user', JSON.stringify(user));
-        document.getElementById("auth").style.display = "none";
-        document.getElementById("collection").style.display = "block";
-        let collection_header = document.getElementById("collection_header")
-        collection_header.innerText = collection_header.innerText.replace('{Username}', user.Username)
-        let collection_table = document.getElementById("collection_table")
-        fetch("cards/retrieve", {
-            headers: {
-                "Content-Type": "application/json"
-            },
-            method: "POST",
-            body: JSON.stringify({session: session, user: user})
-        }).then(res => res.json())
+
+// Collection Page
+function authCompleted(data) {
+    const {session, user} = data;
+    localStorage.setItem('session', JSON.stringify(session));
+    localStorage.setItem('user', JSON.stringify(user));
+    document.getElementById("auth").style.display = "none";
+    document.getElementById("collection").style.display = "block";
+    let collection_header = document.getElementById("collection_header")
+    collection_header.innerText = collection_header.innerText.replace('{Username}', user.Username)
+    let collection_table = document.getElementById("collection_table")
+    fetch("cards/retrieve", {
+        headers: {
+            "Content-Type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify({session: session, user: user})
+    }).then(res => res.json())
         .then(data => {
             if (data.error) {
                 if (data.status === 401) {
@@ -1096,268 +1051,208 @@
                 })
             }
         })
+}
+
+// Authentication Page
+window.onload = () => {
+    if (localStorage.getItem('session') && localStorage.getItem('user')) {
+        const data = { session: JSON.parse(localStorage.getItem('session')), user: JSON.parse(localStorage.getItem('user')) };
+        authCompleted(data);
     }
-    window.onload = () => {
-        if (localStorage.getItem('session') && localStorage.getItem('user')) {
-            const data = { session: JSON.parse(localStorage.getItem('session')), user: JSON.parse(localStorage.getItem('user')) };
-            authCompleted(data);
-        }
-        document.getElementById("auth_register").addEventListener("submit", (e) => {
-            e.preventDefault();
-            const rUsername = document.getElementById('auth_register_username').value
-            const rPassword = document.getElementById('auth_register_password').value
-            fetch("auth/register", {
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                method: "POST",
-                body: JSON.stringify({ "Username": rUsername, "Password": rPassword})
-            }).then((response) => response.json()).then((data) => {
-                console.log(data)
-                if (data.error) {
-                    document.getElementById("auth_register_error_message").innerText = data.error
-                } else {
-                    authCompleted(data)
-                }
-            })
-        })
-        document.getElementById("auth_register").addEventListener("input", (e) => {
-            document.getElementById("auth_register_error_message").innerText = ''
-        })
-        document.getElementById("auth_login").addEventListener("submit", (e) => {
-            e.preventDefault();
-            const lUsername = document.getElementById('auth_login_username').value
-            const lPassword = document.getElementById('auth_login_password').value
-            fetch("auth/login", {
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                method: "POST",
-                body: JSON.stringify({ "Username": lUsername, "Password": lPassword})
-            }).then((response) => response.json()).then((data) => {
-                console.log(data)
-                if (data.error) {
-                    document.getElementById("auth_login_error_message").innerText = data.error
-                } else {
-                    authCompleted(data)
-                }
-            })
-        })
-        document.getElementById("auth_login").addEventListener("input", (e) => {
-            document.getElementById("auth_login_error_message").innerText = ''
-        })
-        let r = Math.floor(Math.random() * 64)+192;
-        let g = Math.floor(Math.random() * 64)+192;
-        let b = Math.floor(Math.random() * 64)+192;
-
-        const screens = document.getElementsByClassName("screen")
-
-        for (let i = 0; i < screens.length; i++) {
-            screens[i].style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-        }
-
-        const auth = document.getElementsByClassName("auth");
-
-        for (let i = 0; i < auth.length; i++) {
-            auth[i].style.backgroundColor = `rgb(${r-64}, ${g-64}, ${b-64})`;
-        }
-        document.getElementById("collection_create_button").addEventListener("click", (e) => {
-            const detailsWindow = open("", "CreateCard", "popup,width=600,height=900");
-            detailsWindow.addEventListener("unload", () => {
-                window.location.reload();
-            })
-            const detailElement = (id) => detailsWindow.document.getElementById(id)
-            let attackAmt = 1
-            detailsWindow.document.body.style.backgroundColor = window.getComputedStyle(document.getElementById("collection")).backgroundColor;
-            detailsWindow.document.body.innerHTML = detailsHTML
-            const card_parent_drop = detailElement("card_parent")
-            if (localStorage.getItem("cards")) {
-                for (let card of JSON.parse(localStorage.getItem("cards"))) {
-                    card_parent_drop.innerHTML += `<option value="${card.CardID}">${card.Name} - ${card.Set}</option>`
-                }
+    document.getElementById("auth_register").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const rUsername = document.getElementById('auth_register_username').value
+        const rPassword = document.getElementById('auth_register_password').value
+        fetch("auth/register", {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify({ "Username": rUsername, "Password": rPassword})
+        }).then((response) => response.json()).then((data) => {
+            console.log(data)
+            if (data.error) {
+                document.getElementById("auth_register_error_message").innerText = data.error
+            } else {
+                authCompleted(data)
             }
-            detailElement("card_ability_edit").addEventListener("click", (e) => {
-                detailElement("details_screen").style.display = "none";
-                try {
-                    const jsonFormat = JSON.parse(detailElement("card_ability").value)
-                    detailElement("ability_name").value = jsonFormat.Name
-                    detailElement("ability_description").value = jsonFormat.Description
-                } catch (error) {
+        })
+    })
+    document.getElementById("auth_register").addEventListener("input", (e) => {
+        document.getElementById("auth_register_error_message").innerText = ''
+    })
+    document.getElementById("auth_login").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const lUsername = document.getElementById('auth_login_username').value
+        const lPassword = document.getElementById('auth_login_password').value
+        fetch("auth/login", {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify({ "Username": lUsername, "Password": lPassword})
+        }).then((response) => response.json()).then((data) => {
+            console.log(data)
+            if (data.error) {
+                document.getElementById("auth_login_error_message").innerText = data.error
+            } else {
+                authCompleted(data)
+            }
+        })
+    })
+    document.getElementById("auth_login").addEventListener("input", (e) => {
+        document.getElementById("auth_login_error_message").innerText = ''
+    })
+    let r = Math.floor(Math.random() * 64)+192;
+    let g = Math.floor(Math.random() * 64)+192;
+    let b = Math.floor(Math.random() * 64)+192;
 
-                }
-                detailElement("ability_screen").style.display = "block";
-            })
-            detailElement("ability_save").addEventListener("click", (e) => {
-                detailElement("ability_screen").style.display = "none";
-                const jsonFormat = {Name: detailElement("ability_name").value, Description: detailElement("ability_description").value}
-                try {
-                    if (jsonFormat !== "") {
-                        detailElement("card_ability").value = JSON.stringify(jsonFormat);
-                    }
-                } catch (error) {
+    const screens = document.getElementsByClassName("screen")
 
-                }
-                detailElement("details_screen").style.display = "block";
-            })
-            detailElement("card_attacks_edit").addEventListener("click", (e) => {
-                detailElement("attacks_screen").style.display = "none";
-                try {
-                    const jsonFormat = JSON.parse(detailElement("card_attacks").value)
-                    if (jsonFormat !== "") {
-                        for (let i = 0; i < 4; i++) {
-                            for (let j = 0; j < 4; j++) {
-                                detailElement(`card_attack_${i+1}_cost_${j+1}`).value = jsonFormat[i].Cost[j]
-                            }
-                            detailElement(`card_attack_${i+1}_name`).value = jsonFormat[i].Name
-                            detailElement(`card_attack_${i+1}_damage`).value = jsonFormat[i].Damage
-                            detailElement(`card_attack_${i+1}_modifier`).value = jsonFormat[i].Modifier
-                            detailElement(`card_attack_${i+1}_description`).value = jsonFormat[i].Description
-                        }
-                    }
-                } catch (error) {
+    for (let i = 0; i < screens.length; i++) {
+        screens[i].style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+    }
 
+    const auth = document.getElementsByClassName("auth");
+
+    for (let i = 0; i < auth.length; i++) {
+        auth[i].style.backgroundColor = `rgb(${r-64}, ${g-64}, ${b-64})`;
+    }
+    document.getElementById("collection_create_button").addEventListener("click", (e) => {
+        const detailsWindow = open("", "CreateCard", "popup,width=600,height=900");
+        detailsWindow.addEventListener("unload", () => {
+            window.location.reload();
+        })
+        const detailElement = (id) => detailsWindow.document.getElementById(id)
+        let attackAmt = 1
+        detailsWindow.document.body.style.backgroundColor = window.getComputedStyle(document.getElementById("collection")).backgroundColor;
+        detailsWindow.document.body.innerHTML = detailsHTML
+        const card_parent_drop = detailElement("card_parent")
+        if (localStorage.getItem("cards")) {
+            for (let card of JSON.parse(localStorage.getItem("cards"))) {
+                card_parent_drop.innerHTML += `<option value="${card.CardID}">${card.Name} - ${card.Set}</option>`
+            }
+        }
+        detailElement("card_ability_edit").addEventListener("click", (e) => {
+            detailElement("details_screen").style.display = "none";
+            try {
+                const jsonFormat = JSON.parse(detailElement("card_ability").value)
+                detailElement("ability_name").value = jsonFormat.Name
+                detailElement("ability_description").value = jsonFormat.Description
+            } catch (error) {
+
+            }
+            detailElement("ability_screen").style.display = "block";
+        })
+        detailElement("ability_save").addEventListener("click", (e) => {
+            detailElement("ability_screen").style.display = "none";
+            const jsonFormat = {Name: detailElement("ability_name").value, Description: detailElement("ability_description").value}
+            try {
+                if (jsonFormat !== "") {
+                    detailElement("card_ability").value = JSON.stringify(jsonFormat);
                 }
-                detailElement("attacks_screen").style.display = "block";
-            })
-            detailElement("attacks_save").addEventListener("click", (e) => {
-                detailElement("attacks_screen").style.display = "none";
-                try {
-                    let jsonFormat = [{Cost: [], Name: "", Damage: 0, Modifier: "", Description: ""}, {Cost: [], Name: "", Damage: 0, Modifier: "", Description: ""}, {Cost: [], Name: "", Damage: 0, Modifier: "", Description: ""}, {Cost: [], Name: "", Damage: 0, Modifier: "", Description: ""}];
+            } catch (error) {
+
+            }
+            detailElement("details_screen").style.display = "block";
+        })
+        detailElement("card_attacks_edit").addEventListener("click", (e) => {
+            detailElement("attacks_screen").style.display = "none";
+            try {
+                const jsonFormat = JSON.parse(detailElement("card_attacks").value)
+                if (jsonFormat !== "") {
                     for (let i = 0; i < 4; i++) {
                         for (let j = 0; j < 4; j++) {
-                            jsonFormat[i].Cost[j] = detailElement(`card_attack_${i+1}_cost_${j+1}`).value
+                            detailElement(`card_attack_${i+1}_cost_${j+1}`).value = jsonFormat[i].Cost[j]
                         }
-                        jsonFormat[i].Name = detailElement(`card_attack_${i+1}_name`).value
-                        jsonFormat[i].Damage = parseInt(detailElement(`card_attack_${i+1}_damage`).value)
-                        jsonFormat[i].Modifier = detailElement(`card_attack_${i+1}_modifier`).value
-                        jsonFormat[i].Description = detailElement(`card_attack_${i+1}_description`).value
-                        detailElement("card_attacks").value = JSON.stringify(jsonFormat);
+                        detailElement(`card_attack_${i+1}_name`).value = jsonFormat[i].Name
+                        detailElement(`card_attack_${i+1}_damage`).value = jsonFormat[i].Damage
+                        detailElement(`card_attack_${i+1}_modifier`).value = jsonFormat[i].Modifier
+                        detailElement(`card_attack_${i+1}_description`).value = jsonFormat[i].Description
                     }
-                } catch (error) {
+                }
+            } catch (error) {
 
-                }
-                detailElement("details_screen").style.display = "block";
-            })
-            detailElement("card_save").addEventListener("click", (e) => {
-                const height = parseInt(detailElement("card_height_ft").value)*12+parseInt(detailElement("card_height_in").value)
-                if (detailElement("card_ability").value === "") detailElement("card_ability").value = "{\"Name\":\"\",\"Description\":\"\"}"
-                if (detailElement("card_attacks").value === "") detailElement("card_attacks").value = "[{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"}]"
-                let JSONFormat = {
-                    CardID: -1,
-                    UserID: -1,
-                    CardType: detailElement("card_card_type").value,
-                    Name: detailElement("card_name").value,
-                    Parent: parseInt(detailElement("card_parent").value),
-                    HP: parseInt(detailElement("card_hp").value),
-                    Type: detailElement("card_type").value,
-                    DexNo: parseInt(detailElement("card_dexno").value),
-                    Breed: detailElement("card_breed").value,
-                    Height: height,
-                    Weight: parseFloat(detailElement("card_weight").value),
-                    Ability: JSON.parse(detailElement("card_ability").value),
-                    Attacks: JSON.parse(detailElement("card_attacks").value),
-                    Weakness: detailElement("card_weakness").value,
-                    Resistance: detailElement("card_resistance").value,
-                    RetreatCost: parseInt(detailElement("card_retreat_cost").value),
-                    Set: detailElement("card_set").value,
-                    SetNumber: parseInt(detailElement("card_set_number").value),
-                    Rarity: detailElement("card_rarity").value,
-                    Print: detailElement("card_print").value,
-                    Lore: detailElement("card_lore").value
-                }
-                for (let value in JSONFormat) {
-                    if (JSONFormat[value] === "" || JSONFormat[value] === -1) {
-                        JSONFormat[value] = undefined;
-                    }
-                }
-                const credentials = { session: JSON.parse(localStorage.getItem('session')), user: JSON.parse(localStorage.getItem('user')) };
-                fetch("cards/create", {
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    method: "PUT",
-                    body: JSON.stringify({session: credentials.session, user: credentials.user, CardData: JSONFormat})
-                }).then(res => res.json())
-                    .then(data => {
-                        if (data.error) {
-                            if (data.status === 401) {
-                                localStorage.removeItem('session');
-                                localStorage.removeItem('user');
-                                window.location.reload();
-                            } else if (data.status === 400 || data.status === 422) {
-                                detailsWindow.alert("Invalid Data, Please fix any empty boxes.")
-                            }
-                            else if (data.status === 500) {
-                                detailsWindow.alert("Internal Server Error, Please Try Again Later.")
-                            }
-                            return;
-                        }
-                        detailsWindow.close()
-                        window.location.reload();
-                    })
-            })
+            }
+            detailElement("attacks_screen").style.display = "block";
         })
+        detailElement("attacks_save").addEventListener("click", (e) => {
+            detailElement("attacks_screen").style.display = "none";
+            try {
+                let jsonFormat = [{Cost: [], Name: "", Damage: 0, Modifier: "", Description: ""}, {Cost: [], Name: "", Damage: 0, Modifier: "", Description: ""}, {Cost: [], Name: "", Damage: 0, Modifier: "", Description: ""}, {Cost: [], Name: "", Damage: 0, Modifier: "", Description: ""}];
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        jsonFormat[i].Cost[j] = detailElement(`card_attack_${i+1}_cost_${j+1}`).value
+                    }
+                    jsonFormat[i].Name = detailElement(`card_attack_${i+1}_name`).value
+                    jsonFormat[i].Damage = parseInt(detailElement(`card_attack_${i+1}_damage`).value)
+                    jsonFormat[i].Modifier = detailElement(`card_attack_${i+1}_modifier`).value
+                    jsonFormat[i].Description = detailElement(`card_attack_${i+1}_description`).value
+                    detailElement("card_attacks").value = JSON.stringify(jsonFormat);
+                }
+            } catch (error) {
 
-    }
-</script>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>PokémonTCG Collector</title>
-    </head>
-    <div id="auth" class="screen">
-        <div class="center">
-            <form id="auth_login" class="auth">
-                <span style="font-size: 1.5em; font-weight: bold;">Login</span>
-                <br>
-                <span id="auth_login_error_message" style="color: red"></span>
-                <br>
-                <label for="auth_login_username">Username</label>
-                <input id="auth_login_username" type="text" name="username" placeholder="Username" required>
-                <br>
-                <label for="auth_login_password">Password</label>
-                <input id="auth_login_password" type="password" name="password" placeholder="Password" required>
-                <br>
-                <input type="submit" value="Login">
-                <button type="button" onclick="document.getElementById('auth_login').style.display = 'none'; document.getElementById('auth_register').style.display = 'block'">Or Register</button>
-            </form>
-            <form id="auth_register" class="auth" style="display: none;">
-                <span style="font-size: 1.5em; font-weight: bold;">Register</span>
-                <br>
-                <span id="auth_register_error_message" style="color: red"></span>
-                <br>
-                <label for="auth_register_username">Username</label>
-                <input id="auth_register_username" type="text" name="username" placeholder="Username" required>
-                <br>
-                <label for="auth_register_password">Password</label>
-                <input id="auth_register_password" type="password" name="password" placeholder="Password" required>
-                <br>
-                <input type="submit" value="Register">
-                <button type="button" onclick="document.getElementById('auth_register').style.display = 'none'; document.getElementById('auth_login').style.display = 'block'">Or Login</button>
-            </form>
-        </div>
-    </div>
-    <div id="collection" class="screen" style="display: none;">
-        <br>
-        <span id="collection_header" style="font-size: 2.5em; font-weight: bold; margin: 25px">Viewing {Username}'s Collection</span>
-        <button id="collection_logout_button" style="height: 50px; width: 125px; font-size: 1.5em; float: right; margin: 0 20px 15px 0">Log Out</button>
-        <button id="collection_create_button" style="height: 50px; width: 175px; font-size: 1.5em; float: right; margin: 0 20px 15px 0">Create Card</button>
-        <br>
-        <br>
-        <table id="collection_table">
-            <tr>
-                <th style="visibility: hidden; border: none"></th>
-                <th></th>
-                <th>Qty</th>
-                <th>Card Type</th>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Breed</th>
-                <th>Set</th>
-                <th>Set Number</th>
-                <th>Print</th>
-                <th style="visibility: hidden; border: none"></th>
-            </tr>
-        </table>
-    </div>
-</html>
+            }
+            detailElement("details_screen").style.display = "block";
+        })
+        detailElement("card_save").addEventListener("click", (e) => {
+            const height = parseInt(detailElement("card_height_ft").value)*12+parseInt(detailElement("card_height_in").value)
+            if (detailElement("card_ability").value === "") detailElement("card_ability").value = "{\"Name\":\"\",\"Description\":\"\"}"
+            if (detailElement("card_attacks").value === "") detailElement("card_attacks").value = "[{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"}]"
+            let JSONFormat = {
+                CardID: -1,
+                UserID: -1,
+                CardType: detailElement("card_card_type").value,
+                Name: detailElement("card_name").value,
+                Parent: parseInt(detailElement("card_parent").value),
+                HP: parseInt(detailElement("card_hp").value),
+                Type: detailElement("card_type").value,
+                DexNo: parseInt(detailElement("card_dexno").value),
+                Breed: detailElement("card_breed").value,
+                Height: height,
+                Weight: parseFloat(detailElement("card_weight").value),
+                Ability: JSON.parse(detailElement("card_ability").value),
+                Attacks: JSON.parse(detailElement("card_attacks").value),
+                Weakness: detailElement("card_weakness").value,
+                Resistance: detailElement("card_resistance").value,
+                RetreatCost: parseInt(detailElement("card_retreat_cost").value),
+                Set: detailElement("card_set").value,
+                SetNumber: parseInt(detailElement("card_set_number").value),
+                Rarity: detailElement("card_rarity").value,
+                Print: detailElement("card_print").value,
+                Lore: detailElement("card_lore").value
+            }
+            for (let value in JSONFormat) {
+                if (JSONFormat[value] === "" || JSONFormat[value] === -1) {
+                    JSONFormat[value] = undefined;
+                }
+            }
+            const credentials = { session: JSON.parse(localStorage.getItem('session')), user: JSON.parse(localStorage.getItem('user')) };
+            fetch("cards/create", {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                method: "PUT",
+                body: JSON.stringify({session: credentials.session, user: credentials.user, CardData: JSONFormat})
+            }).then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        if (data.status === 401) {
+                            localStorage.removeItem('session');
+                            localStorage.removeItem('user');
+                            window.location.reload();
+                        } else if (data.status === 400 || data.status === 422) {
+                            detailsWindow.alert("Invalid Data, Please fix any empty boxes.")
+                        }
+                        else if (data.status === 500) {
+                            detailsWindow.alert("Internal Server Error, Please Try Again Later.")
+                        }
+                        return;
+                    }
+                    detailsWindow.close()
+                    window.location.reload();
+                })
+        })
+    })
+
+}

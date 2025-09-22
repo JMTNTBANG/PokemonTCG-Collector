@@ -1,0 +1,44 @@
+.center {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.screen {
+    left: 0;
+    top: 0;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+.auth {
+    padding: 25px;
+}
+.auth * {
+    margin: 5px
+}
+.editButton {
+    border: none;
+    font-size: 1em;
+    background-color: darkgray;
+    width: 30px;
+    float: right;
+}
+body {
+    font-family: "Roboto Light", Helvetica, sans-serif;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    padding: 10px
+}
+th {
+    background-color: lightgray;
+}
+td {
+    background-color: darkgray;
+}
+th, td {
+    padding: 5px 10px;
+    border: gray solid 3px;
+}
