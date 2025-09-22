@@ -63,7 +63,9 @@ router.put("/update", async (req, res) => {
     }
     try {
         cardData.UserID = user.UserID;
-        const card = new Card(await getAsync(`UPDATE Cards SET CardID = ?, UserID = ?, CardType = ?, Name = ?, Parent = ?, HP = ?, Type = ?, DexNo = ?, Breed = ?, Height = ?, Weight = ?, Ability = ?, Attacks = ?, Weakness = ?, Resistance = ?, RetreatCost = ?, "Set" = ?, SetNumber = ?, Rarity = ?, Print = ?, Lore = ? WHERE CardID = ? RETURNING *;`, [cardData.CardID, cardData.UserID, cardData.CardType, cardData.Name, cardData.Parent, cardData.HP, cardData.Type, cardData.DexNo, cardData.Breed, cardData.Height, cardData.Weight, JSON.stringify(cardData.Ability), JSON.stringify(cardData.Attacks), cardData.Weakness, cardData.Resistance, cardData.RetreatCost, cardData.Set, cardData.SetNumber, cardData.Rarity, cardData.Print, cardData.Lore, cardData.CardID]))
+        let card = await getAsync(`UPDATE Cards SET CardID = ?, UserID = ?, CardType = ?, Name = ?, Parent = ?, HP = ?, Type = ?, DexNo = ?, Breed = ?, Height = ?, Weight = ?, Ability = ?, Attacks = ?, Weakness = ?, Resistance = ?, RetreatCost = ?, "Set" = ?, SetNumber = ?, Rarity = ?, Print = ?, Lore = ? WHERE CardID = ? RETURNING *;`, [cardData.CardID, cardData.UserID, cardData.CardType, cardData.Name, cardData.Parent, cardData.HP, cardData.Type, cardData.DexNo, cardData.Breed, cardData.Height, cardData.Weight, JSON.stringify(cardData.Ability), JSON.stringify(cardData.Attacks), cardData.Weakness, cardData.Resistance, cardData.RetreatCost, cardData.Set, cardData.SetNumber, cardData.Rarity, cardData.Print, cardData.Lore, cardData.CardID])
+        card.Qty = -1
+        card = new Card(card)
         res.status(200).send({card: card});
     } catch (error) {
         res.status(422).send({status: 422, error: "Not Valid Card Data"});
@@ -75,12 +77,11 @@ router.delete("/delete", async (req, res) => {
     if (!sessionVerified) return;
     const {session, user} = sessionVerified;
     const cardID = req.body.CardID;
-    if (!cardID) {
+    if (cardID === undefined) {
         res.status(400).send({status: 400, error: "Missing Card ID"});
         return;
     }
     try {
-        let cards = await allAsync('SELECT * FROM Cards WHERE UserID = ?', [user.UserID]);
         await runAsync(`DELETE FROM Cards WHERE CardID = ${cardID}`);
         res.status(200).send({message: "Success"})
     } catch (error) {

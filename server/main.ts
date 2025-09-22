@@ -179,7 +179,7 @@ type Print = "Normal" | "Reverse Holo" | "Rare Holo"
 interface CardData {
     CardID: number;
     UserID: number;
-    Qty: number;
+    Qty: number | null;
     CardType: CardType;
     Name: string;
     Parent: number | null;
@@ -204,7 +204,7 @@ interface CardData {
 export class Card implements CardData {
     CardID: number;
     UserID: number;
-    Qty: number;
+    Qty: number | null;
     CardType: CardType;
     Name: string;
     Parent: number | null;
@@ -230,7 +230,7 @@ export class Card implements CardData {
             typeof dbOutput === 'object' && dbOutput !== null &&
             'CardID' in dbOutput && typeof (dbOutput as any).CardID === 'number' &&
             'UserID' in dbOutput && typeof (dbOutput as any).UserID === 'number' &&
-            'Qty' in dbOutput && typeof (dbOutput as any).Qty === 'number' &&
+            'Qty' in dbOutput && (typeof (dbOutput as any).Qty === 'number' || (dbOutput as any).Qty === null) &&
             'CardType' in dbOutput && typeof (dbOutput as any).CardType === 'string' &&
             'Name' in dbOutput && typeof (dbOutput as any).Name === 'string' &&
             'Parent' in dbOutput && (typeof (dbOutput as any).Parent === 'number' || (dbOutput as any).Parent === null) &&
@@ -295,7 +295,9 @@ export async function createCard(user: User, cardData: CardData): Promise<Card> 
     let id: number;
     if (typeof(idLocation.Location) === "number") id = idLocation.Location; else throw Error("Not a Card");
     await getAsync('UPDATE IDLocation SET Location = ? WHERE "Table" = ?', [id + 1, "Cards"])
-    return new Card(await getAsync('INSERT INTO Cards (CardID, UserID, CardType, Name, Parent, HP, Type, DexNo, Breed, Height, Weight, Ability, Attacks, Weakness, Resistance, RetreatCost, "Set", SetNumber, Rarity, Print, Lore) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING *', [id, user.UserID, cardData.CardType, cardData.Name, JSON.stringify(cardData.Parent), cardData.HP, cardData.Type, cardData.DexNo, cardData.Breed, cardData.Height, cardData.Weight, JSON.stringify(cardData.Ability), JSON.stringify(cardData.Attacks), cardData.Weakness, cardData.Resistance, cardData.RetreatCost, cardData.Set, cardData.SetNumber, cardData.Rarity, cardData.Print, cardData.Lore]))
+    const card = await getAsync('INSERT INTO Cards (CardID, UserID, CardType, Name, Parent, HP, Type, DexNo, Breed, Height, Weight, Ability, Attacks, Weakness, Resistance, RetreatCost, "Set", SetNumber, Rarity, Print, Lore) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING *', [id, user.UserID, cardData.CardType, cardData.Name, JSON.stringify(cardData.Parent), cardData.HP, cardData.Type, cardData.DexNo, cardData.Breed, cardData.Height, cardData.Weight, JSON.stringify(cardData.Ability), JSON.stringify(cardData.Attacks), cardData.Weakness, cardData.Resistance, cardData.RetreatCost, cardData.Set, cardData.SetNumber, cardData.Rarity, cardData.Print, cardData.Lore])
+    card.Qty = -1
+    return new Card(card)
 }
 
 type AdjustmentReason = "Received" | "Sold" | "Donation" | "Lost"
