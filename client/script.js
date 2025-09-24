@@ -240,7 +240,7 @@ const detailsHTML = `
                             Set
                         </th>
                         <td>
-                            <input type="text" id="card_set" name="card_set"></input>
+                            <select id="card_set" name="card_set"></select>
                         </td>
                     </tr>
                     <tr>
@@ -777,7 +777,7 @@ function authCompleted(data) {
         method: "POST",
         body: JSON.stringify({session: session, user: user})
     }).then(res => res.json())
-        .then(data => {
+        .then(async data => {
             if (data.error) {
                 if (data.status === 401) {
                     localStorage.removeItem('session');
@@ -820,6 +820,36 @@ function authCompleted(data) {
                 newRow.insertCell().textContent = card.SetNumber;
                 newRow.insertCell().textContent = card.Print;
 
+                let tcgplayerCard = {}
+                const groupList = await fetch(`https://tcgcsv.com/tcgplayer/3/groups`, {method: "GET"}).then(res => res.json())
+                for (let _group of groupList.results) {
+                    if (_group.name === card.Set) {
+                        tcgplayerCard.group = _group
+                        break;
+                    }
+                }
+                if (tcgplayerCard.group) {
+                    const cardList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/products`, {method: "GET"}).then(res => res.json())
+                    for (let _card of cardList.results) {
+                        if (_card.name === card.Name) {
+                            tcgplayerCard.info = _card
+                            break
+                        }
+                    }
+                    if (tcgplayerCard.info) {
+                        const priceList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/prices`, {method: "GET"}).then(res => res.json())
+                        for (let _price of priceList.results) {
+                            if (_price.productId === tcgplayerCard.info.productId) {
+                                tcgplayerCard.value = _price
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (tcgplayerCard.value) {
+                    newRow.insertCell().textContent = `$${tcgplayerCard.value.marketPrice}`
+                } else newRow.insertCell().textContent = ""
+
                 newRow.insertCell().outerHTML = `<td style="visibility: hidden; border: none"></td>`;
 
                 editButton.addEventListener("click", (e) => {
@@ -835,6 +865,10 @@ function authCompleted(data) {
                         for (let card of JSON.parse(localStorage.getItem("cards"))) {
                             card_parent_drop.innerHTML += `<option value="${card.CardID}">${card.Name} - ${card.Set}</option>`
                         }
+                    }
+                    const card_set_drop = detailElement("card_set")
+                    for (let group of groupList.results.sort((a, b) => new Date(a.publishedOn) - new Date(b.publishedOn))) {
+                        card_set_drop.innerHTML += `<option value="${group.name}">${group.name}</option>"`
                     }
                     const heightft = Math.floor(card.Height/12)
                     const heightin = card.Height % 12
@@ -1118,7 +1152,7 @@ window.onload = () => {
     for (let i = 0; i < auth.length; i++) {
         auth[i].style.backgroundColor = `rgb(${r-64}, ${g-64}, ${b-64})`;
     }
-    document.getElementById("collection_create_button").addEventListener("click", (e) => {
+    document.getElementById("collection_create_button").addEventListener("click", async (e) => {
         const detailsWindow = open("", "CreateCard", "popup,width=600,height=900");
         detailsWindow.addEventListener("unload", () => {
             window.location.reload();
@@ -1127,6 +1161,11 @@ window.onload = () => {
         let attackAmt = 1
         detailsWindow.document.body.style.backgroundColor = window.getComputedStyle(document.getElementById("collection")).backgroundColor;
         detailsWindow.document.body.innerHTML = detailsHTML
+        const groupList = await fetch(`https://tcgcsv.com/tcgplayer/3/groups`, {method: "GET"}).then(res => res.json())
+        const card_set_drop = detailElement("card_set")
+        for (let group of groupList.results.sort((a, b) => new Date(a.publishedOn) - new Date(b.publishedOn))) {
+            card_set_drop.innerHTML += `<option value="${group.name}">${group.name}</option>"`
+        }
         const card_parent_drop = detailElement("card_parent")
         if (localStorage.getItem("cards")) {
             for (let card of JSON.parse(localStorage.getItem("cards"))) {
