@@ -292,7 +292,7 @@ const detailsHTML = `
                 </table>
                 <br>
                 <br>
-                <center><button id="card_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button><button id="card_delete" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Delete</button></center>
+                <center><button id="card_ocr" "height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">OCR</button><button id="card_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button><button id="card_delete" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Delete</button></center>
             </div>
             <div id="ability_screen" class="screen" style="display: none;">
                 <br>
@@ -669,6 +669,13 @@ const detailsHTML = `
                 <br>
                 <br>
                 <center><button id="attacks_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button></center>
+            </div>
+            <div id="ocr_screen" class="screen" style="display: none;">
+                <video id="video_box"></video>
+                <canvas id="photo_box" style="display: none"></canvas>
+                <button id="scan_button">Scan</button>
+                <p id="ocr_result"></p>
+                <button id="card_ocr_close">Close OCR</button>
             </div>
         </body>
         `
@@ -1291,6 +1298,42 @@ window.onload = () => {
                     detailsWindow.close()
                     window.location.reload();
                 })
+        })
+        detailElement("card_ocr").addEventListener("click", (e) => {
+            const videoBox = detailElement("video_box");
+            navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {videoBox.srcObject = stream; videoBox.play()}).catch(e => console.error(e));
+            detailElement("details_screen").style.display = "none";
+            detailElement("ocr_screen").style.display = "block";
+        })
+        detailElement("scan_button").addEventListener("click", async () => {
+            const canvas = detailElement("photo_box");
+            const videoBox = detailElement("video_box");
+            const ocrResult = detailElement("ocr_result");
+            const context = canvas.getContext("2d");
+            context.fillStyle = "#ffffff";
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            canvas.width = videoBox.videoWidth;
+            canvas.height = videoBox.videoHeight;
+            context.drawImage(videoBox, 0, 0, videoBox.videoWidth, videoBox.videoHeight);
+            canvas.toBlob(async (blob) => {
+                if (!blob) return;
+                const formData = new FormData();
+                formData.append("image", blob, 'image.jpg');
+                try {
+                    const response = await fetch('/ocr', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    ocrResult.innerText = await response.text();
+
+                } catch (e) {
+                    console.error(e);
+                }
+            }, "image/jpeg")
+        })
+        detailElement("card_ocr_close").addEventListener("click", async () => {
+            detailElement("camera_screen").style.display = "none";
+            detailElement("details_screen").style.display = "block";
         })
     })
 

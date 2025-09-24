@@ -10,6 +10,7 @@ import auth from "./routes/auth.ts"
 import cards from "./routes/cards.ts";
 import adjustments from "./routes/adjustments.js";
 import webClient from "./routes/web.ts";
+import ocr from "./routes/ocr.ts";
 
 
 interface PromisifiedGet {
@@ -393,6 +394,7 @@ try {
     server.use('/cards', cards)
     server.use('/adjustments', adjustments)
     server.use('/web', webClient)
+    server.use('/ocr', ocr)
 
     server.listen(port, () => {
         console.log(`Server Ready`)
