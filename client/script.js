@@ -1332,7 +1332,7 @@ window.onload = () => {
             }, "image/jpeg")
         })
         detailElement("card_ocr_close").addEventListener("click", async () => {
-            detailElement("camera_screen").style.display = "none";
+            detailElement("ocr_screen").style.display = "none";
             detailElement("details_screen").style.display = "block";
         })
     })

@@ -390,6 +390,9 @@ try {
         next();
     });
 
+    server.get("/", (req, res) => {
+        res.redirect('/web')
+    })
     server.use("/auth", auth)
     server.use('/cards', cards)
     server.use('/adjustments', adjustments)
