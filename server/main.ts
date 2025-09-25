@@ -67,8 +67,11 @@ export const runAsync: PromisifiedRun = (sql, params = []) => {
         }
     });
 };
-export async function getCardValues() {
-    const cards = await allAsync('SELECT * FROM Cards') as Array<Card>
+export async function getCardValues(definedCard: Card | undefined = undefined) {
+    let cards
+    if (definedCard) {
+        cards = [definedCard]
+    } else cards = await allAsync('SELECT * FROM Cards') as Array<Card>
     for (let card of cards) {
         try {
             card.Qty = -1

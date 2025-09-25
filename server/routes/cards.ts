@@ -53,7 +53,7 @@ router.put("/create", async (req, res) => {
         cardData.DateCreated = -1
         new Card(cardData)
         let card = await createCard(user, cardData)
-        await getCardValues()
+        await getCardValues(card)
         res.status(200).send({card: card});
     } catch (error) {
         res.status(422).send({status: 422, error: "Not Valid Card Data"});
@@ -81,7 +81,7 @@ router.put("/update", async (req, res) => {
         card.Qty = -1
         card.Value = -1
         card = new Card(card)
-        await getCardValues()
+        await getCardValues(card)
         res.status(200).send({card: card});
     } catch (error) {
         res.status(422).send({status: 422, error: "Not Valid Card Data"});
