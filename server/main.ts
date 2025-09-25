@@ -10,6 +10,7 @@ import auth from "./routes/auth.ts"
 import cards from "./routes/cards.ts";
 import adjustments from "./routes/adjustments.js";
 import webClient from "./routes/web.ts";
+import ocr from "./routes/ocr.ts";
 
 
 interface PromisifiedGet {
@@ -66,6 +67,49 @@ export const runAsync: PromisifiedRun = (sql, params = []) => {
         }
     });
 };
+export async function getCardValues(definedCard: Card | undefined = undefined) {
+    let cards
+    if (definedCard) {
+        cards = [definedCard]
+    } else cards = await allAsync('SELECT * FROM Cards') as Array<Card>
+    for (let card of cards) {
+        try {
+            card.Qty = -1
+            card = new Card(card)
+            let tcgplayerCard: {[key: string]: any} = {}
+            const groupList = await fetch(`https://tcgcsv.com/tcgplayer/3/groups`, {method: "GET"}).then(res => res.json())
+            for (let _group of groupList.results) {
+                if (_group.name === card.Set) {
+                    tcgplayerCard.group = _group
+                    break;
+                }
+            }
+            if (tcgplayerCard.group) {
+                const cardList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/products`, {method: "GET"}).then(res => res.json())
+                for (let _card of cardList.results) {
+                    if (_card.name === card.Name) {
+                        tcgplayerCard.info = _card
+                        break
+                    }
+                }
+                if (tcgplayerCard.info) {
+                    const priceList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/prices`, {method: "GET"}).then(res => res.json())
+                    for (let _price of priceList.results) {
+                        if (_price.productId === tcgplayerCard.info.productId) {
+                            tcgplayerCard.value = _price
+                            break;
+                        }
+                    }
+                    if (tcgplayerCard.value) {
+                        await runAsync(`UPDATE Cards SET Value = ${tcgplayerCard.value.marketPrice} WHERE CardID = ${card.CardID}`)
+                    }
+                }
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
 
 
 interface UserData {
@@ -199,6 +243,7 @@ interface CardData {
     Rarity: Rarity;
     Print: Print;
     Lore: string | null;
+    Value: number | null;
     DateCreated: string | Date;
 }
 export class Card implements CardData {
@@ -224,6 +269,7 @@ export class Card implements CardData {
     Rarity: Rarity;
     Print: Print;
     Lore: string | null;
+    Value: number | null;
     DateCreated: Date;
     constructor(dbOutput: unknown) {
         if (
@@ -250,6 +296,7 @@ export class Card implements CardData {
             'Rarity' in dbOutput && typeof (dbOutput as any).Rarity === 'string' &&
             'Print' in dbOutput && typeof (dbOutput as any).Print === 'string' &&
             'Lore' in dbOutput && (typeof (dbOutput as any).Lore === 'string' || (dbOutput as any).Lore === null) &&
+            'Value' in dbOutput && (typeof (dbOutput as any).Value === 'number' || (dbOutput as any).Value === null) &&
             'DateCreated' in dbOutput
         ) {
             const cardData = dbOutput as CardData;
@@ -278,6 +325,7 @@ export class Card implements CardData {
             this.Rarity = cardData.Rarity;
             this.Print = cardData.Print;
             this.Lore = cardData.Lore;
+            this.Value = cardData.Value;
 
             if (typeof cardData.DateCreated === 'string') {
                 this.DateCreated = new Date(cardData.DateCreated);
@@ -295,7 +343,7 @@ export async function createCard(user: User, cardData: CardData): Promise<Card> 
     let id: number;
     if (typeof(idLocation.Location) === "number") id = idLocation.Location; else throw Error("Not a Card");
     await getAsync('UPDATE IDLocation SET Location = ? WHERE "Table" = ?', [id + 1, "Cards"])
-    const card = await getAsync('INSERT INTO Cards (CardID, UserID, CardType, Name, Parent, HP, Type, DexNo, Breed, Height, Weight, Ability, Attacks, Weakness, Resistance, RetreatCost, "Set", SetNumber, Rarity, Print, Lore) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING *', [id, user.UserID, cardData.CardType, cardData.Name, JSON.stringify(cardData.Parent), cardData.HP, cardData.Type, cardData.DexNo, cardData.Breed, cardData.Height, cardData.Weight, JSON.stringify(cardData.Ability), JSON.stringify(cardData.Attacks), cardData.Weakness, cardData.Resistance, cardData.RetreatCost, cardData.Set, cardData.SetNumber, cardData.Rarity, cardData.Print, cardData.Lore])
+    const card = await getAsync('INSERT INTO Cards (CardID, UserID, CardType, Name, Parent, HP, Type, DexNo, Breed, Height, Weight, Ability, Attacks, Weakness, Resistance, RetreatCost, "Set", SetNumber, Rarity, Print, Lore) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING *', [id, user.UserID, cardData.CardType, cardData.Name, cardData.Parent, cardData.HP, cardData.Type, cardData.DexNo, cardData.Breed, cardData.Height, cardData.Weight, JSON.stringify(cardData.Ability), JSON.stringify(cardData.Attacks), cardData.Weakness, cardData.Resistance, cardData.RetreatCost, cardData.Set, cardData.SetNumber, cardData.Rarity, cardData.Print, cardData.Lore])
     card.Qty = -1
     return new Card(card)
 }
@@ -358,21 +406,64 @@ const server: express.Application = express();
 const port: number = 80;
 const endpoint: string = "/"
 if (!fs.existsSync('server/config')) fs.mkdirSync('server/config')
-const initialized: boolean = fs.existsSync('server/config/database.db')
+let currentVer = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+let migrate: boolean = false;
+async function migrateTable(sourceDb: string, destDb: string, tableName: string) {
+    // Get column info from the new table
+    const destColsInfo = await allAsync(`PRAGMA ${destDb}.table_info(${tableName})`);
+    const destColNames = destColsInfo.map((col: any) => col.name);
+
+    // Get column info from the old table
+    const sourceColsInfo = await allAsync(`PRAGMA ${sourceDb}.table_info(${tableName})`);
+    const sourceColNames = sourceColsInfo.map((col: any) => col.name);
+
+    // Find the common columns that exist in both tables
+    const commonCols = destColNames.filter((col: string) => sourceColNames.includes(col));
+    const colsString = commonCols.map((col: string) => `"${col}"`).join(', ');
+
+    // Dynamically build and run the migration query
+    const sql = `INSERT INTO ${destDb}.${tableName} (${colsString}) SELECT ${colsString} FROM ${sourceDb}.${tableName};`;
+    console.log(`Migrating ${tableName} with common columns: ${commonCols.join(', ')}`);
+    await runAsync(sql);
+}
+if (fs.existsSync('server/config/dbVersion.json')) {
+    let dbVer = JSON.parse(fs.readFileSync('server/config/dbVersion.json', 'utf8'))
+    if (dbVer.version !== currentVer.version) {
+        fs.writeFileSync('server/config/dbVersion.json', JSON.stringify({version: currentVer.version}))
+        fs.writeFileSync('server/config/database.old', fs.readFileSync('server/config/database.db'))
+        fs.rmSync('server/config/database.db')
+        migrate = true
+    }
+} else {
+    fs.writeFileSync('server/config/dbVersion.json', JSON.stringify({version: currentVer.version}))
+}
+let initialized: boolean = fs.existsSync('server/config/database.db')
 
 export const db: sqlite3.Database = new sqlite3.Database("server/config/database.db");
 
 if (!initialized) {
     try {
         await runAsync("CREATE TABLE IDLocation ( 'Table' VARCHAR(255) PRIMARY KEY, Location INT DEFAULT 0 )")
-        await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Users')")
-        await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Sessions')")
-        await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Cards')")
-        await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Adjustments')")
         await runAsync("CREATE TABLE Users ( UserID INT PRIMARY KEY, Username VARCHAR(255), Password VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
         await runAsync("CREATE TABLE Sessions ( SessionID INT PRIMARY KEY, UserID INT, UUID VARCHAR(255), Expiration DATETIME, DateCreated DATETIME DEFAULT current_timestamp )")
-        await runAsync("CREATE TABLE Cards ( CardID INT PRIMARY KEY, UserID INT, CardType VARCHAR(255), Name VARCHAR(255), Parent INT, HP INT, Type VARCHAR(255), DexNo INT, Breed VARCHAR(255), Height INT, Weight FLOAT, Ability JSON, Attacks JSON, Weakness VARCHAR(255), Resistance VARCHAR(255), RetreatCost INT, 'Set' VARCHAR(255), SetNumber INT, Rarity VARCHAR(255), Print VARCHAR(255), Lore VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
+        await runAsync("CREATE TABLE Cards ( CardID INT PRIMARY KEY, UserID INT, CardType VARCHAR(255), Name VARCHAR(255), Parent INT, HP INT, Type VARCHAR(255), DexNo INT, Breed VARCHAR(255), Height INT, Weight FLOAT, Ability JSON, Attacks JSON, Weakness VARCHAR(255), Resistance VARCHAR(255), RetreatCost INT, 'Set' VARCHAR(255), SetNumber INT, Rarity VARCHAR(255), Print VARCHAR(255), Lore VARCHAR(255), Value FLOAT, DateCreated DATETIME DEFAULT current_timestamp )")
         await runAsync("CREATE TABLE Adjustments ( AdjustmentID INT PRIMARY KEY, CardID INT, UserID INT, Amount INT, ReasonCode VARCHAR(255), DateCreated DATETIME DEFAULT current_timestamp )")
+        if (migrate) {
+            console.log("Server Has been Updated, Migrating Database...")
+            await runAsync("ATTACH DATABASE 'server/config/database.old' AS old_db;")
+            await migrateTable('old_db', 'main', 'IDLocation');
+            await migrateTable('old_db', 'main', 'Users');
+            await migrateTable('old_db', 'main', 'Sessions');
+            await migrateTable('old_db', 'main', 'Cards');
+            await migrateTable('old_db', 'main', 'Adjustments');
+            await runAsync("DETACH DATABASE old_db;")
+            console.log("Database Migrated!")
+        } else {
+            await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Users')")
+            await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Sessions')")
+            await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Cards')")
+            await runAsync("INSERT INTO IDLocation ('Table') VALUES ('Adjustments')")
+        }
     } catch (error) {
         console.error('Error Initializing Database:', error);
     }
@@ -389,10 +480,17 @@ try {
         next();
     });
 
+    server.get("/", (req, res) => {
+        res.redirect('/web')
+    })
     server.use("/auth", auth)
     server.use('/cards', cards)
     server.use('/adjustments', adjustments)
     server.use('/web', webClient)
+    server.use('/ocr', ocr)
+
+    await getCardValues()
+    setInterval(getCardValues, 86400000)
 
     server.listen(port, () => {
         console.log(`Server Ready`)

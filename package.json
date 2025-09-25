@@ -1,6 +1,6 @@
 {
   "name": "pokemontcg-collector",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Log your Video Game Collection with this MySQL Integrated Web Interface",
   "type": "module",
   "main": "src/index.js",
@@ -18,17 +18,21 @@
   },
   "homepage": "https://github.com/JMTNTBANG/MySQL-PokemonTCG-Collector#readme",
   "dependencies": {
+    "@google-cloud/vision": "^5.3.3",
     "bcrypt": "^6.0.0",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
+    "multer": "^2.0.2",
     "readline-sync": "^1.4.10",
     "sqlite3": "^5.1.7",
-    "typescript": "^5.9.2",
-    "tsx": "^4.20.5"
+    "tesseract.js": "^6.0.1",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.3",
+    "@types/multer": "^2.0.0",
     "@types/node": "^24.3.1",
     "@types/sqlite3": "^3.1.11",
     "jsx-runtime": "^1.2.0",
