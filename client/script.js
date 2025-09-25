@@ -970,7 +970,7 @@ function authCompleted(data) {
                         }
                         for (let value in JSONFormat) {
                             if (JSONFormat[value] === "" || JSONFormat[value] === -1) {
-                                JSONFormat[value] = undefined;
+                                JSONFormat[value] = null;
                             }
                         }
                         const credentials = { session: JSON.parse(localStorage.getItem('session')), user: JSON.parse(localStorage.getItem('user')) };

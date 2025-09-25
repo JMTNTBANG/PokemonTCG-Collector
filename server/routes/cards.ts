@@ -1,6 +1,6 @@
 import express from 'express';
 import {verifySession} from "../util.js";
-import {allAsync, Card, createCard, getAsync, runAsync} from "../main.js";
+import {allAsync, Card, createCard, getAsync, getCardValues, runAsync} from "../main.js";
 
 const router: express.Router = express.Router();
 
@@ -53,6 +53,7 @@ router.put("/create", async (req, res) => {
         cardData.DateCreated = -1
         new Card(cardData)
         let card = await createCard(user, cardData)
+        await getCardValues()
         res.status(200).send({card: card});
     } catch (error) {
         res.status(422).send({status: 422, error: "Not Valid Card Data"});
@@ -80,6 +81,7 @@ router.put("/update", async (req, res) => {
         card.Qty = -1
         card.Value = -1
         card = new Card(card)
+        await getCardValues()
         res.status(200).send({card: card});
     } catch (error) {
         res.status(422).send({status: 422, error: "Not Valid Card Data"});

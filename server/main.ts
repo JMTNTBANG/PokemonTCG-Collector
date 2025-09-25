@@ -67,6 +67,46 @@ export const runAsync: PromisifiedRun = (sql, params = []) => {
         }
     });
 };
+export async function getCardValues() {
+    const cards = await allAsync('SELECT * FROM Cards') as Array<Card>
+    for (let card of cards) {
+        try {
+            card.Qty = -1
+            card = new Card(card)
+            let tcgplayerCard: {[key: string]: any} = {}
+            const groupList = await fetch(`https://tcgcsv.com/tcgplayer/3/groups`, {method: "GET"}).then(res => res.json())
+            for (let _group of groupList.results) {
+                if (_group.name === card.Set) {
+                    tcgplayerCard.group = _group
+                    break;
+                }
+            }
+            if (tcgplayerCard.group) {
+                const cardList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/products`, {method: "GET"}).then(res => res.json())
+                for (let _card of cardList.results) {
+                    if (_card.name === card.Name) {
+                        tcgplayerCard.info = _card
+                        break
+                    }
+                }
+                if (tcgplayerCard.info) {
+                    const priceList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/prices`, {method: "GET"}).then(res => res.json())
+                    for (let _price of priceList.results) {
+                        if (_price.productId === tcgplayerCard.info.productId) {
+                            tcgplayerCard.value = _price
+                            break;
+                        }
+                    }
+                    if (tcgplayerCard.value) {
+                        await runAsync(`UPDATE Cards SET Value = ${tcgplayerCard.value.marketPrice} WHERE CardID = ${card.CardID}`)
+                    }
+                }
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
 
 
 interface UserData {
@@ -446,46 +486,6 @@ try {
     server.use('/web', webClient)
     server.use('/ocr', ocr)
 
-    async function getCardValues() {
-        const cards = await allAsync('SELECT * FROM Cards') as Array<Card>
-        for (let card of cards) {
-            try {
-                card.Qty = -1
-                card = new Card(card)
-                let tcgplayerCard: {[key: string]: any} = {}
-                const groupList = await fetch(`https://tcgcsv.com/tcgplayer/3/groups`, {method: "GET"}).then(res => res.json())
-                for (let _group of groupList.results) {
-                    if (_group.name === card.Set) {
-                        tcgplayerCard.group = _group
-                        break;
-                    }
-                }
-                if (tcgplayerCard.group) {
-                    const cardList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/products`, {method: "GET"}).then(res => res.json())
-                    for (let _card of cardList.results) {
-                        if (_card.name === card.Name) {
-                            tcgplayerCard.info = _card
-                            break
-                        }
-                    }
-                    if (tcgplayerCard.info) {
-                        const priceList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/prices`, {method: "GET"}).then(res => res.json())
-                        for (let _price of priceList.results) {
-                            if (_price.productId === tcgplayerCard.info.productId) {
-                                tcgplayerCard.value = _price
-                                break;
-                            }
-                        }
-                        if (tcgplayerCard.value) {
-                            await runAsync(`UPDATE Cards SET Value = ${tcgplayerCard.value.marketPrice} WHERE CardID = ${card.CardID}`)
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error(err)
-            }
-        }
-    }
     await getCardValues()
     setInterval(getCardValues, 86400000)
 
