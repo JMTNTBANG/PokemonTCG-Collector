@@ -948,7 +948,6 @@ function authCompleted(data) {
                         if (detailElement("card_attacks").value === "") detailElement("card_attacks").value = "[{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"}]"
                         let JSONFormat = {
                             CardID: card.CardID,
-                            UserID: -1,
                             CardType: detailElement("card_card_type").value,
                             Name: detailElement("card_name").value,
                             Parent: parseInt(detailElement("card_parent").value),
@@ -1259,8 +1258,6 @@ window.onload = () => {
             if (detailElement("card_ability").value === "") detailElement("card_ability").value = "{\"Name\":\"\",\"Description\":\"\"}"
             if (detailElement("card_attacks").value === "") detailElement("card_attacks").value = "[{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"},{\"Cost\":[\"\",\"\",\"\",\"\"],\"Name\":\"\",\"Damage\":null,\"Modifier\":\"\",\"Description\":\"\"}]"
             let JSONFormat = {
-                CardID: -1,
-                UserID: -1,
                 CardType: detailElement("card_card_type").value,
                 Name: detailElement("card_name").value,
                 Parent: parseInt(detailElement("card_parent").value),
@@ -1283,7 +1280,7 @@ window.onload = () => {
             }
             for (let value in JSONFormat) {
                 if (JSONFormat[value] === "" || JSONFormat[value] === -1) {
-                    JSONFormat[value] = undefined;
+                    JSONFormat[value] = null;
                 }
             }
             const credentials = { session: JSON.parse(localStorage.getItem('session')), user: JSON.parse(localStorage.getItem('user')) };
