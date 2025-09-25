@@ -59,7 +59,8 @@ const detailsHTML = `
             </style>
         </head>
         <body>
-            <div id="details_screen" class="screen">
+        <div id="details_screen" class="screen" style="display: flex; justify-content: space-around">
+            <div id="details">
                 <br>
                 <span style="font-size: 2.5em; font-weight: bold; margin: 25px">Details</span>
                 <br>
@@ -292,391 +293,398 @@ const detailsHTML = `
                 </table>
                 <br>
                 <br>
-                <center><button id="card_ocr" "height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">OCR</button><button id="card_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button><button id="card_delete" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Delete</button></center>
+                <center><button id="card_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button><button id="card_delete" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Delete</button></center>
             </div>
-            <div id="ability_screen" class="screen" style="display: none;">
-                <br>
-                <span style="font-size: 2.5em; font-weight: bold; margin: 25px">Edit Ability</span>
+            <div id="ocr">
                 <br>
                 <br>
-                <table>
-                    <tr>
-                        <th>Name</th>
-                        <td>
-                            <input type="text" id="ability_name" name="ability_name">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Description</th>
-                        <td>
-                            <textarea id="ability_description" name="ability_description"></textarea>
-                        </td>
-                    </tr>
-                </table>
                 <br>
                 <br>
-                <center><button id="ability_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button></center>
-            </div>
-            <div id="attacks_screen" class="screen" style="display: none;">
-                <br>
-                <span style="font-size: 2.5em; font-weight: bold; margin: 25px">Edit Attacks</span>
                 <br>
                 <br>
-                <table id="card_attack_1">
-                    <tr>
-                        <th>Cost</th>
-                        <td>
-                            <select id="card_attack_1_cost_1" name="card_attack_1_cost_1" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_1_cost_2" name="card_attack_1_cost_2" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_1_cost_3" name="card_attack_1_cost_3" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_1_cost_4" name="card_attack_1_cost_4" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Name</th>
-                        <td>
-                            <input type="text" id="card_attack_1_name" name="card_attack_1_name">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Damage</th>
-                        <td>
-                            <input type="number" id="card_attack_1_damage" name="card_attack_1_damage" style="width: 50px;" dir="rtl">
-                            <select id="card_attack_1_modifier" name="card_attack_1_modifier" style="width: 30px">
-                                <option></option>
-                                <option value="Add">+</option>
-                                <option value="Multiply">x</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Description</th>
-                        <td>
-                            <textarea id="card_attack_1_description" name="card_attack_1_description"></textarea>
-                        </td>
-                    </tr>
-                </table>
-                <table id="card_attack_2">
-                    <tr>
-                        <th>Cost</th>
-                        <td>
-                            <select id="card_attack_2_cost_1" name="card_attack_2_cost_1" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_2_cost_2" name="card_attack_2_cost_2" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_2_cost_3" name="card_attack_2_cost_3" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_2_cost_4" name="card_attack_2_cost_4" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Name</th>
-                        <td>
-                            <input type="text" id="card_attack_2_name" name="card_attack_2_name">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Damage</th>
-                        <td>
-                            <input type="number" id="card_attack_2_damage" name="card_attack_2_damage" style="width: 50px;" dir="rtl">
-                            <select id="card_attack_2_modifier" name="card_attack_2_modifier" style="width: 30px">
-                                <option></option>
-                                <option value="Add">+</option>
-                                <option value="Multiply">x</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Description</th>
-                        <td>
-                            <textarea id="card_attack_2_description" name="card_attack_2_description"></textarea>
-                        </td>
-                    </tr>
-                </table>
-                <table id="card_attack_3">
-                    <tr>
-                        <th>Cost</th>
-                        <td>
-                            <select id="card_attack_3_cost_1" name="card_attack_3_cost_1" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_3_cost_2" name="card_attack_3_cost_2" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_3_cost_3" name="card_attack_3_cost_3" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_3_cost_4" name="card_attack_3_cost_4" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Name</th>
-                        <td>
-                            <input type="text" id="card_attack_3_name" name="card_attack_3_name">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Damage</th>
-                        <td>
-                            <input type="number" id="card_attack_3_damage" name="card_attack_3_damage" style="width: 50px;" dir="rtl">
-                            <select id="card_attack_3_modifier" name="card_attack_3_modifier" style="width: 30px">
-                                <option></option>
-                                <option value="Add">+</option>
-                                <option value="Multiply">x</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Description</th>
-                        <td>
-                            <textarea id="card_attack_3_description" name="card_attack_3_description"></textarea>
-                        </td>
-                    </tr>
-                </table>
-                <table id="card_attack_4">
-                    <tr>
-                        <th>Cost</th>
-                        <td>
-                            <select id="card_attack_4_cost_1" name="card_attack_4_cost_1" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_4_cost_2" name="card_attack_4_cost_2" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_4_cost_3" name="card_attack_4_cost_3" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                            <select id="card_attack_4_cost_4" name="card_attack_4_cost_4" style="width: 100px">
-                                <option></option>
-                                <option value="Grass">Grass</option>
-                                <option value="Fire">Fire</option>
-                                <option value="Water">Water</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Fighting">Fighting</option>
-                                <option value="Psychic">Psychic</option>
-                                <option value="Colorless">Colorless</option>
-                                <option value="Darkness">Darkness</option>
-                                <option value="Metal">Metal</option>
-                                <option value="Dragon">Dragon</option>
-                                <option value="Fairy">Fairy</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Name</th>
-                        <td>
-                            <input type="text" id="card_attack_4_name" name="card_attack_4_name">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Damage</th>
-                        <td>
-                            <input type="number" id="card_attack_4_damage" name="card_attack_4_damage" style="width: 50px;" dir="rtl">
-                            <select id="card_attack_4_modifier" name="card_attack_4_modifier" style="width: 30px">
-                                <option></option>
-                                <option value="Add">+</option>
-                                <option value="Multiply">x</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Description</th>
-                        <td>
-                            <textarea id="card_attack_4_description" name="card_attack_4_description"></textarea>
-                        </td>
-                    </tr>
-                </table>
-                <br>
-                <br>
-                <center><button id="attacks_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button></center>
-            </div>
-            <div id="ocr_screen" class="screen" style="display: none;">
-                <video id="video_box"></video>
+                <center><button id="card_ocr" "height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">OCR</button></center>
+                <center><video id="video_box"></video></center>
                 <canvas id="photo_box" style="display: none"></canvas>
-                <button id="scan_button">Scan</button>
-                <p id="ocr_result"></p>
-                <button id="card_ocr_close">Close OCR</button>
+                <center><button id="scan_button" style="display:none;">Scan</button></center>
+                <center><p id="ocr_result"></p></center>
             </div>
+        </div>
+        <div id="ability_screen" class="screen" style="display: none;">
+            <br>
+            <span style="font-size: 2.5em; font-weight: bold; margin: 25px">Edit Ability</span>
+            <br>
+            <br>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <td>
+                        <input type="text" id="ability_name" name="ability_name">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        <textarea id="ability_description" name="ability_description"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <br>
+            <center><button id="ability_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button></center>
+        </div>
+        <div id="attacks_screen" class="screen" style="display: none;">
+            <br>
+            <span style="font-size: 2.5em; font-weight: bold; margin: 25px">Edit Attacks</span>
+            <br>
+            <br>
+            <table id="card_attack_1">
+                <tr>
+                    <th>Cost</th>
+                    <td>
+                        <select id="card_attack_1_cost_1" name="card_attack_1_cost_1" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_1_cost_2" name="card_attack_1_cost_2" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_1_cost_3" name="card_attack_1_cost_3" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_1_cost_4" name="card_attack_1_cost_4" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>
+                        <input type="text" id="card_attack_1_name" name="card_attack_1_name">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Damage</th>
+                    <td>
+                        <input type="number" id="card_attack_1_damage" name="card_attack_1_damage" style="width: 50px;" dir="rtl">
+                        <select id="card_attack_1_modifier" name="card_attack_1_modifier" style="width: 30px">
+                            <option></option>
+                            <option value="Add">+</option>
+                            <option value="Multiply">x</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        <textarea id="card_attack_1_description" name="card_attack_1_description"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <table id="card_attack_2">
+                <tr>
+                    <th>Cost</th>
+                    <td>
+                        <select id="card_attack_2_cost_1" name="card_attack_2_cost_1" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_2_cost_2" name="card_attack_2_cost_2" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_2_cost_3" name="card_attack_2_cost_3" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_2_cost_4" name="card_attack_2_cost_4" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>
+                        <input type="text" id="card_attack_2_name" name="card_attack_2_name">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Damage</th>
+                    <td>
+                        <input type="number" id="card_attack_2_damage" name="card_attack_2_damage" style="width: 50px;" dir="rtl">
+                        <select id="card_attack_2_modifier" name="card_attack_2_modifier" style="width: 30px">
+                            <option></option>
+                            <option value="Add">+</option>
+                            <option value="Multiply">x</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        <textarea id="card_attack_2_description" name="card_attack_2_description"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <table id="card_attack_3">
+                <tr>
+                    <th>Cost</th>
+                    <td>
+                        <select id="card_attack_3_cost_1" name="card_attack_3_cost_1" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_3_cost_2" name="card_attack_3_cost_2" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_3_cost_3" name="card_attack_3_cost_3" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_3_cost_4" name="card_attack_3_cost_4" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>
+                        <input type="text" id="card_attack_3_name" name="card_attack_3_name">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Damage</th>
+                    <td>
+                        <input type="number" id="card_attack_3_damage" name="card_attack_3_damage" style="width: 50px;" dir="rtl">
+                        <select id="card_attack_3_modifier" name="card_attack_3_modifier" style="width: 30px">
+                            <option></option>
+                            <option value="Add">+</option>
+                            <option value="Multiply">x</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        <textarea id="card_attack_3_description" name="card_attack_3_description"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <table id="card_attack_4">
+                <tr>
+                    <th>Cost</th>
+                    <td>
+                        <select id="card_attack_4_cost_1" name="card_attack_4_cost_1" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_4_cost_2" name="card_attack_4_cost_2" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_4_cost_3" name="card_attack_4_cost_3" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                        <select id="card_attack_4_cost_4" name="card_attack_4_cost_4" style="width: 100px">
+                            <option></option>
+                            <option value="Grass">Grass</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Water">Water</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>
+                        <input type="text" id="card_attack_4_name" name="card_attack_4_name">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Damage</th>
+                    <td>
+                        <input type="number" id="card_attack_4_damage" name="card_attack_4_damage" style="width: 50px;" dir="rtl">
+                        <select id="card_attack_4_modifier" name="card_attack_4_modifier" style="width: 30px">
+                            <option></option>
+                            <option value="Add">+</option>
+                            <option value="Multiply">x</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        <textarea id="card_attack_4_description" name="card_attack_4_description"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <br>
+            <center><button id="attacks_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button></center>
+        </div>
         </body>
         `
 const adjustHTML = `
@@ -826,47 +834,19 @@ function authCompleted(data) {
                 newRow.insertCell().textContent = card.Set;
                 newRow.insertCell().textContent = card.SetNumber;
                 newRow.insertCell().textContent = card.Print;
-
-                let tcgplayerCard = {}
-                const groupList = await fetch(`https://tcgcsv.com/tcgplayer/3/groups`, {method: "GET"}).then(res => res.json())
-                for (let _group of groupList.results) {
-                    if (_group.name === card.Set) {
-                        tcgplayerCard.group = _group
-                        break;
-                    }
-                }
-                if (tcgplayerCard.group) {
-                    const cardList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/products`, {method: "GET"}).then(res => res.json())
-                    for (let _card of cardList.results) {
-                        if (_card.name === card.Name) {
-                            tcgplayerCard.info = _card
-                            break
-                        }
-                    }
-                    if (tcgplayerCard.info) {
-                        const priceList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/prices`, {method: "GET"}).then(res => res.json())
-                        for (let _price of priceList.results) {
-                            if (_price.productId === tcgplayerCard.info.productId) {
-                                tcgplayerCard.value = _price
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (tcgplayerCard.value) {
-                    newRow.insertCell().textContent = `$${tcgplayerCard.value.marketPrice}`
-                } else newRow.insertCell().textContent = ""
+                newRow.insertCell().textContent = `$${card.Value}`;
 
                 newRow.insertCell().outerHTML = `<td style="visibility: hidden; border: none"></td>`;
 
-                editButton.addEventListener("click", (e) => {
-                    const detailsWindow = open("", "EditCard", "popup,width=600,height=900");
+                editButton.addEventListener("click", async (e) => {
+                    const detailsWindow = open("", "EditCard", "popup,width=910,height=1000");
                     detailsWindow.addEventListener("unload", () => {
                         window.location.reload();
                     })
                     const detailElement = (id) => detailsWindow.document.getElementById(id)
                     detailsWindow.document.body.style.backgroundColor = window.getComputedStyle(document.getElementById("collection")).backgroundColor;
                     detailsWindow.document.body.innerHTML = detailsHTML
+                    const groupList = await fetch(`https://tcgcsv.com/tcgplayer/3/groups`, {method: "GET"}).then(res => res.json())
                     const card_parent_drop = detailElement("card_parent")
                     if (localStorage.getItem("cards")) {
                         for (let card of JSON.parse(localStorage.getItem("cards"))) {
@@ -921,7 +901,7 @@ function authCompleted(data) {
                         } catch (error) {
 
                         }
-                        detailElement("details_screen").style.display = "block";
+                        detailElement("details_screen").style.display = "flex";
                     })
                     detailElement("card_attacks_edit").addEventListener("click", (e) => {
                         detailElement("attacks_screen").style.display = "none";
@@ -960,7 +940,7 @@ function authCompleted(data) {
                         } catch (error) {
 
                         }
-                        detailElement("details_screen").style.display = "block";
+                        detailElement("details_screen").style.display = "flex";
                     })
                     detailElement("card_save").addEventListener("click", (e) => {
                         const height = parseInt(detailElement("card_height_ft").value)*12+parseInt(detailElement("card_height_in").value)
@@ -1045,6 +1025,39 @@ function authCompleted(data) {
                                 detailsWindow.close()
                                 window.location.reload();
                             })
+                    })
+                    detailElement("card_ocr").addEventListener("click", (e) => {
+                        detailElement("card_ocr").style.display = "none";
+                        detailElement("scan_button").style.display = "block";
+                        const videoBox = detailElement("video_box");
+                        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {videoBox.srcObject = stream; videoBox.play()}).catch(e => console.error(e));
+                        videoBox.style.width = '350px'
+                    })
+                    detailElement("scan_button").addEventListener("click", async () => {
+                        const canvas = detailElement("photo_box");
+                        const videoBox = detailElement("video_box");
+                        const ocrResult = detailElement("ocr_result");
+                        const context = canvas.getContext("2d");
+                        context.fillStyle = "#ffffff";
+                        context.fillRect(0, 0, canvas.width, canvas.height);
+                        canvas.width = videoBox.videoWidth;
+                        canvas.height = videoBox.videoHeight;
+                        context.drawImage(videoBox, 0, 0, videoBox.videoWidth, videoBox.videoHeight);
+                        canvas.toBlob(async (blob) => {
+                            if (!blob) return;
+                            const formData = new FormData();
+                            formData.append("image", blob, 'image.jpg');
+                            try {
+                                const response = await fetch('/ocr', {
+                                    method: 'POST',
+                                    body: formData,
+                                });
+                                ocrResult.innerText = await response.text();
+
+                            } catch (e) {
+                                console.error(e);
+                            }
+                        }, "image/jpeg")
                     })
                 })
                 inventoryCount.addEventListener("click", (e) => {
@@ -1160,7 +1173,7 @@ window.onload = () => {
         auth[i].style.backgroundColor = `rgb(${r-64}, ${g-64}, ${b-64})`;
     }
     document.getElementById("collection_create_button").addEventListener("click", async (e) => {
-        const detailsWindow = open("", "CreateCard", "popup,width=600,height=900");
+        const detailsWindow = open("", "CreateCard", "popup,width=910,height=1000");
         detailsWindow.addEventListener("unload", () => {
             window.location.reload();
         })
@@ -1200,7 +1213,7 @@ window.onload = () => {
             } catch (error) {
 
             }
-            detailElement("details_screen").style.display = "block";
+            detailElement("details_screen").style.display = "flex";
         })
         detailElement("card_attacks_edit").addEventListener("click", (e) => {
             detailElement("attacks_screen").style.display = "none";
@@ -1239,7 +1252,7 @@ window.onload = () => {
             } catch (error) {
 
             }
-            detailElement("details_screen").style.display = "block";
+            detailElement("details_screen").style.display = "flex";
         })
         detailElement("card_save").addEventListener("click", (e) => {
             const height = parseInt(detailElement("card_height_ft").value)*12+parseInt(detailElement("card_height_in").value)
@@ -1299,11 +1312,13 @@ window.onload = () => {
                     window.location.reload();
                 })
         })
+        detailElement("card_delete").style.display = "none";
         detailElement("card_ocr").addEventListener("click", (e) => {
+            detailElement("card_ocr").style.display = "none";
+            detailElement("scan_button").style.display = "block";
             const videoBox = detailElement("video_box");
             navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {videoBox.srcObject = stream; videoBox.play()}).catch(e => console.error(e));
-            detailElement("details_screen").style.display = "none";
-            detailElement("ocr_screen").style.display = "block";
+            videoBox.style.width = '350px'
         })
         detailElement("scan_button").addEventListener("click", async () => {
             const canvas = detailElement("photo_box");
@@ -1330,10 +1345,6 @@ window.onload = () => {
                     console.error(e);
                 }
             }, "image/jpeg")
-        })
-        detailElement("card_ocr_close").addEventListener("click", async () => {
-            detailElement("ocr_screen").style.display = "none";
-            detailElement("details_screen").style.display = "block";
         })
     })
 
