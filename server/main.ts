@@ -226,7 +226,6 @@ interface Attack {
     Modifier: "Add" | "Multiply" | null
 }
 type Rarity = "Common" | "Uncommon" | "Rare" | "Double Rare" | "Ultra Rare" | "Illustration Rare" | "Special Illustration Rare" | "Hyper Rare" | "Promo"
-type Print = "Normal" | "Reverse Holo" | "Rare Holo"
 interface CardData {
     CardID: number;
     UserID: number;
@@ -240,15 +239,15 @@ interface CardData {
     Breed: string | null;
     Height: number | null;
     Weight: number | null;
-    Ability: Ability | null;
-    Attacks: Array<Attack> | null;
+    Ability: Ability | string | null;
+    Attacks: Array<Attack> | string | null;
     Weakness: Type | null;
     Resistance: Type | null;
     RetreatCost: number | null;
     Set: string;
     SetNumber: number;
     Rarity: Rarity;
-    Print: Print;
+    Print: string;
     Lore: string | null;
     Value: number | null;
     DateCreated: string | Date;
@@ -274,7 +273,7 @@ export class Card implements CardData {
     Set: string;
     SetNumber: number;
     Rarity: Rarity;
-    Print: Print;
+    Print: string;
     Lore: string | null;
     Value: number | null;
     DateCreated: Date;
@@ -293,8 +292,8 @@ export class Card implements CardData {
             'Breed' in dbOutput && (typeof (dbOutput as any).Breed === 'string' || (dbOutput as any).Breed === null) &&
             'Height' in dbOutput && (typeof (dbOutput as any).Height === 'number' || (dbOutput as any).Height === null) &&
             'Weight' in dbOutput && (typeof (dbOutput as any).Weight === 'number' || (dbOutput as any).Weight === null) &&
-            'Ability' in dbOutput && (typeof (dbOutput as any).Ability === 'string' || (dbOutput as any).Ability === null) &&
-            'Attacks' in dbOutput && (typeof (dbOutput as any).Attacks === 'string' || (dbOutput as any).Attacks === null) &&
+            'Ability' in dbOutput && (typeof (dbOutput as any).Ability === 'string' || typeof (dbOutput as any).Ability === 'object' || (dbOutput as any).Ability === null) &&
+            'Attacks' in dbOutput && (typeof (dbOutput as any).Attacks === 'string' || typeof (dbOutput as any).Attacks === 'object' || (dbOutput as any).Attacks === null) &&
             'Weakness' in dbOutput && (typeof (dbOutput as any).Weakness === 'string' || (dbOutput as any).Weakness === null) &&
             'Resistance' in dbOutput && (typeof (dbOutput as any).Resistance === 'string' || (dbOutput as any).Resistance === null) &&
             'RetreatCost' in dbOutput && (typeof (dbOutput as any).RetreatCost === 'number' || (dbOutput as any).RetreatCost === null) &&
@@ -320,10 +319,8 @@ export class Card implements CardData {
             this.Breed = cardData.Breed;
             this.Height = cardData.Height;
             this.Weight = cardData.Weight;
-            // @ts-ignore
-            this.Ability = JSON.parse(cardData.Ability)
-            // @ts-ignore
-            this.Attacks = JSON.parse(cardData.Attacks);
+            this.Ability = typeof cardData.Ability === 'string' ? JSON.parse(cardData.Ability) : cardData.Ability;
+            this.Attacks = typeof cardData.Attacks === 'string' ? JSON.parse(cardData.Attacks) : cardData.Attacks;
             this.Weakness = cardData.Weakness;
             this.Resistance = cardData.Resistance;
             this.RetreatCost = cardData.RetreatCost;
