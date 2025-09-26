@@ -95,7 +95,7 @@ export async function getCardValues(definedCard: Card | undefined = undefined) {
                 if (tcgplayerCard.info) {
                     const priceList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/prices`, {method: "GET"}).then(res => res.json())
                     for (let _price of priceList.results) {
-                        if (_price.productId === tcgplayerCard.info.productId) {
+                        if (_price.productId === tcgplayerCard.info.productId && _price.subTypeName === card.Print) {
                             tcgplayerCard.value = _price
                             break;
                         }

@@ -276,9 +276,6 @@ const detailsHTML = `
                         </th>
                         <td>
                             <select id="card_print" name="card_print">
-                                <option value="Normal">Normal</option>
-                                <option value="Reverse Holo">Reverse Holo</option>
-                                <option value="Rare Holo">Rare Holo</option>
                             </select>
                         </td>
                     </tr>
@@ -775,6 +772,25 @@ const adjustHTML = `
         <center><button id="adjustment_save" style="height: 50px; width: 125px; font-size: 1.5em; margin: 0 20px 15px 0">Save</button></center>
     </body>`
 
+async function getPrints(detailElement, groupList) {
+    let group
+    for (let igroup of groupList.results) {
+        if (igroup.name === detailElement('card_set').value) {
+            group = igroup
+            break;
+        }
+    }
+    detailElement('card_print').innerHTML = ''
+    const priceList = await fetch(`https://tcgcsv.com/tcgplayer/3/${group.groupId}/prices`).then(res => res.json())
+    let prints = []
+    for (let price of priceList.results) {
+        if (!prints.includes(price.subTypeName)) {
+            prints.push(price.subTypeName)
+            detailElement('card_print').innerHTML += `<option id=${price.subTypeName}>${price.subTypeName}</option>`
+        }
+    }
+}
+
 // Collection Page
 function authCompleted(data) {
     const {session, user} = data;
@@ -877,6 +893,9 @@ function authCompleted(data) {
                     detailElement("card_set").value = card.Set
                     detailElement("card_set_number").value = card.SetNumber
                     detailElement("card_rarity").value = card.Rarity
+                    try {
+                        await getPrints(detailElement, groupList)
+                    } catch {}
                     detailElement("card_print").value = card.Print
                     detailElement("card_lore").value = card.Lore
 
@@ -1058,6 +1077,11 @@ function authCompleted(data) {
                             }
                         }, "image/jpeg")
                     })
+                    detailElement("card_set").addEventListener("change", async (e) => {
+                        try {
+                            await getPrints(detailElement, groupList)
+                        } catch {}
+                    })
                 })
                 inventoryCount.addEventListener("click", (e) => {
                     e.preventDefault();
@@ -1185,6 +1209,9 @@ window.onload = () => {
         for (let group of groupList.results.sort((a, b) => new Date(a.publishedOn) - new Date(b.publishedOn))) {
             card_set_drop.innerHTML += `<option value="${group.name}">${group.name}</option>"`
         }
+        try {
+            await getPrints(detailElement, groupList)
+        } catch {}
         const card_parent_drop = detailElement("card_parent")
         if (localStorage.getItem("cards")) {
             for (let card of JSON.parse(localStorage.getItem("cards"))) {
@@ -1342,6 +1369,11 @@ window.onload = () => {
                     console.error(e);
                 }
             }, "image/jpeg")
+        })
+        detailElement("card_set").addEventListener("change", async (e) => {
+            try {
+                await getPrints(detailElement, groupList)
+            } catch {}
         })
     })
 
