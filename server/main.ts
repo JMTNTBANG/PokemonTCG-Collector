@@ -87,9 +87,16 @@ export async function getCardValues(definedCard: Card | undefined = undefined) {
             if (tcgplayerCard.group) {
                 const cardList = await fetch(`https://tcgcsv.com/tcgplayer/3/${tcgplayerCard.group.groupId}/products`, {method: "GET"}).then(res => res.json())
                 for (let _card of cardList.results) {
+                    if (_card.name.includes(card.SetNumber)) {
+                        _card.name = _card.name.slice(0, _card.name.indexOf(card.SetNumber) - 2)
+                    }
                     if (_card.name === card.Name) {
-                        tcgplayerCard.info = _card
-                        break
+                        for (let data of _card.extendedData) {
+                            if (data.name === 'Number' && data.value.slice(0, data.value.indexOf("/")) == card.SetNumber) {
+                                tcgplayerCard.info = _card
+                                break
+                            }
+                        }
                     }
                 }
                 if (tcgplayerCard.info) {
