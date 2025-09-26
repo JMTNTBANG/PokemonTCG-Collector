@@ -48,8 +48,6 @@ router.put("/create", async (req, res) => {
         cardData.UserID = user.UserID;
         cardData.Qty = -1
         cardData.Value = -1
-        cardData.Ability = JSON.stringify(cardData.Ability);
-        cardData.Attacks = JSON.stringify(cardData.Attacks);
         cardData.DateCreated = -1
         new Card(cardData)
         let card = await createCard(user, cardData)
@@ -73,8 +71,6 @@ router.put("/update", async (req, res) => {
         cardData.UserID = user.UserID;
         cardData.Qty = -1
         cardData.Value = -1
-        cardData.Ability = JSON.stringify(cardData.Ability);
-        cardData.Attacks = JSON.stringify(cardData.Attacks);
         cardData.DateCreated = -1
         new Card(cardData)
         let card = await getAsync(`UPDATE Cards SET CardID = ?, UserID = ?, CardType = ?, Name = ?, Parent = ?, HP = ?, Type = ?, DexNo = ?, Breed = ?, Height = ?, Weight = ?, Ability = ?, Attacks = ?, Weakness = ?, Resistance = ?, RetreatCost = ?, "Set" = ?, SetNumber = ?, Rarity = ?, Print = ?, Lore = ? WHERE CardID = ? RETURNING *;`, [cardData.CardID, cardData.UserID, cardData.CardType, cardData.Name, cardData.Parent, cardData.HP, cardData.Type, cardData.DexNo, cardData.Breed, cardData.Height, cardData.Weight, JSON.stringify(cardData.Ability), JSON.stringify(cardData.Attacks), cardData.Weakness, cardData.Resistance, cardData.RetreatCost, cardData.Set, cardData.SetNumber, cardData.Rarity, cardData.Print, cardData.Lore, cardData.CardID])
